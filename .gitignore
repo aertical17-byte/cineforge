@@ -4,6 +4,7 @@ __pycache__/
 *.pyc
 .venv
 data/
+!packages/shared/data/
 *.db
 *.db-*
 logs/

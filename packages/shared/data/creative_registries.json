@@ -1,0 +1,129 @@
+{
+  "$schema": "camera preset registry — original authoring for CineForge AI; generic cinematography vocabulary; fragments are our own prompt language",
+  "camera_moves": [
+    {"id": "static", "name": "Static", "category": "locked-off", "motion_strength": 0, "fragment": "locked-off camera, steady composure, no camera movement", "camera_control_mapping": null},
+    {"id": "zoom_in", "name": "Zoom In", "category": "zoom", "motion_strength": 0.4, "fragment": "slow optical zoom tightening the frame toward the subject", "camera_control_mapping": {"zoom": "in"}},
+    {"id": "zoom_out", "name": "Zoom Out", "category": "zoom", "motion_strength": 0.4, "fragment": "slow optical zoom widening the frame away from the subject", "camera_control_mapping": {"zoom": "out"}},
+    {"id": "dolly_in", "name": "Dolly In", "category": "dolly", "motion_strength": 0.5, "fragment": "smooth dolly push-in gliding toward the subject", "camera_control_mapping": {"camera_orientation": "down", "camera_translation": "push_in"}},
+    {"id": "dolly_out", "name": "Dolly Out", "category": "dolly", "motion_strength": 0.5, "fragment": "smooth dolly pull-back retreating from the subject", "camera_control_mapping": {"camera_translation": "pull_out"}},
+    {"id": "orbit_left", "name": "Orbit Left", "category": "arc", "motion_strength": 0.7, "fragment": "camera arcs left around the subject with a smooth orbital sweep", "camera_control_mapping": {"camera_translation": "horizontal_move_left"}},
+    {"id": "orbit_right", "name": "Orbit Right", "category": "arc", "motion_strength": 0.7, "fragment": "camera arcs right around the subject with a smooth orbital sweep", "camera_control_mapping": {"camera_translation": "horizontal_move_right"}},
+    {"id": "pan_left", "name": "Pan Left", "category": "pan", "motion_strength": 0.3, "fragment": "gentle pan to the left, horizon sweeping across frame", "camera_control_mapping": {"camera_orientation": "left"}},
+    {"id": "pan_right", "name": "Pan Right", "category": "pan", "motion_strength": 0.3, "fragment": "gentle pan to the right, horizon sweeping across frame", "camera_control_mapping": {"camera_orientation": "right"}},
+    {"id": "tilt_up", "name": "Tilt Up", "category": "tilt", "motion_strength": 0.3, "fragment": "camera tilts upward revealing the top of the scene", "camera_control_mapping": {"camera_orientation": "up"}},
+    {"id": "tilt_down", "name": "Tilt Down", "category": "tilt", "motion_strength": 0.3, "fragment": "camera tilts downward settling on the lower part of the scene", "camera_control_mapping": {"camera_orientation": "down"}},
+    {"id": "crane_up", "name": "Crane Up", "category": "crane", "motion_strength": 0.6, "fragment": "crane rises vertically lifting the viewpoint above the scene", "camera_control_mapping": {"camera_translation": "vertical_move_up"}},
+    {"id": "crane_down", "name": "Crane Down", "category": "crane", "motion_strength": 0.6, "fragment": "crane descends vertically lowering the viewpoint into the scene", "camera_control_mapping": {"camera_translation": "vertical_move_down"}},
+    {"id": "tracking", "name": "Tracking Shot", "category": "tracking", "motion_strength": 0.6, "fragment": "side-on tracking shot following the moving subject along its path", "camera_control_mapping": null},
+    {"id": "fpv", "name": "FPV Drone", "category": "aerial", "motion_strength": 0.9, "fragment": "first-person-view drone flight weaving fast through the environment", "camera_control_mapping": null},
+    {"id": "aerial_descend", "name": "Drone Shot", "category": "aerial", "motion_strength": 0.7, "fragment": "aerial drone shot descending and pushing toward the landscape", "camera_control_mapping": null},
+    {"id": "handheld", "name": "Handheld", "category": "operator", "motion_strength": 0.45, "fragment": "handheld camera with organic, imperfect operator motion", "camera_control_mapping": null},
+    {"id": "pov", "name": "POV", "category": "operator", "motion_strength": 0.5, "fragment": "point-of-view shot from the subject's eyes", "camera_control_mapping": {"camera_orientation": "pov"}},
+    {"id": "robot_arm", "name": "Robot Arm", "category": "rig", "motion_strength": 0.8, "fragment": "precise robotic arm camera move, mechanical sweeping parallax", "camera_control_mapping": null},
+    {"id": "helicopter", "name": "Helicopter Shot", "category": "aerial", "motion_strength": 0.85, "fragment": "helicopter aerial circling wide over the terrain", "camera_control_mapping": null},
+    {"id": "dolly_zoom", "name": "Dolly Zoom (Vertigo)", "category": "optical", "motion_strength": 0.9, "fragment": "vertigo dolly-zoom, background compressing while subject stays fixed", "camera_control_mapping": null},
+    {"id": "push_slowmo", "name": "Push + Slow Motion", "category": "combined", "motion_strength": 0.55, "fragment": "slow-motion dolly push with heightened detail", "camera_control_mapping": null}
+  ],
+  "speed_ramps": [
+    {"id": "linear",  "name": "Linear",     "fragment": "even, linear playback speed"},
+    {"id": "auto",    "name": "Auto",      "fragment": "prompt-aware adaptive pacing"},
+    {"id": "flash_in","name": "Flash In",  "fragment": "fast opening burst then settles into normal speed"},
+    {"id": "flash_out","name":"Flash Out", "fragment": "starts in normal speed then accelerates to burst at the end"},
+    {"id": "slowmo",  "name": "Slow-mo",   "fragment": "sustained slow motion, stretched detail"},
+    {"id": "bullet",  "name": "Bullet Time","fragment": "frozen-time bullet time with drifting camera"},
+    {"id": "impact",  "name": "Impact",    "fragment": "hard speed hit on the key action moment"},
+    {"id": "ramp_up", "name": "Ramp Up",   "fragment": "speed builds gradually from slow to fast"}
+  ],
+  "genres": [
+    {"id": "general", "name": "General"}, {"id": "action", "name": "Action"}, {"id": "horror", "name": "Horror"},
+    {"id": "comedy", "name": "Comedy"}, {"id": "noir", "name": "Noir"}, {"id": "drama", "name": "Drama"}, {"id": "epic", "name": "Epic"}
+  ],
+  "eras": [
+    {"id": "1960s", "name": "1960s"}, {"id": "1970s", "name": "1970s"}, {"id": "1980s", "name": "1980s"},
+    {"id": "1990s", "name": "1990s"}, {"id": "2000s", "name": "2000s"}, {"id": "2010s", "name": "2010s"}, {"id": "2020s", "name": "2020s"}
+  ],
+  "tempo": [
+    {"id": "single_shot", "name": "Single Shot", "fragment": "one continuous unbroken shot"},
+    {"id": "glacial",     "name": "Glacial",     "fragment": "unhurried edit rhythm, long held shots"},
+    {"id": "standard",    "name": "Standard",    "fragment": "balanced standard editing rhythm"},
+    {"id": "kinetic",     "name": "Kinetic",     "fragment": "quick cutting kinetic rhythm"},
+    {"id": "chaotic",     "name": "Chaotic",     "fragment": "frantic chaotic montage cutting"}
+  ],
+  "camera_bodies": [
+    {"id": "35mm_film", "name": "35mm Film",   "fragment": "shot on 35mm film"},
+    {"id": "8mm_film",  "name": "8mm Film",    "fragment": "shot on 8mm film, obvious grain and vignetting"},
+    {"id": "dv_cam",    "name": "DV Camcorder","fragment": "1990s DV camcorder look, interlaced haziness"},
+    {"id": "alexa",     "name": "Digital Cinema", "fragment": "large-sensor digital cinema camera"},
+    {"id": "smartphone","name": "Smartphone",  "fragment": "wide-angle smartphone video look"},
+    {"id": "dslr",      "name": "DSLR",        "fragment": "shallow depth DSLR photography look"}
+  ],
+  "lenses": [
+    {"id": "clean_sharp", "name": "Clean Sharp", "fragment": "clean sharp optics"},
+    {"id": "wide", "name": "Wide 18mm", "fragment": "18mm ultra-wide lens"},
+    {"id": "normal", "name": "Normal 35mm", "fragment": "35mm lens"},
+    {"id": "portrait", "name": "Portrait 85mm", "fragment": "85mm portrait lens with soft focus falloff"},
+    {"id": "telephoto", "name": "Telephoto 135mm", "fragment": "135mm telephoto compression"},
+    {"id": "anamorphic", "name": "Anamorphic", "fragment": "anamorphic lens with flared horizontal bokeh"},
+    {"id": "vintage", "name": "Vintage Soft", "fragment": "vintage uncoated lens, halation and soft bloom"},
+    {"id": "fisheye", "name": "Fisheye", "fragment": "fisheye distortion lens"}
+  ],
+  "apertures": [
+    {"id": "t1.3", "name": "T1.3 (dreamy bleed)"}, {"id": "t2", "name": "T2 (cinematic shallow)"},
+    {"id": "t4", "name": "T4 (balanced)"}, {"id": "t8", "name": "T8 (deep focus)"}, {"id": "t16", "name": "T16 (pan focus)"}
+  ],
+  "moveset_styles": [
+    {"id": "statue",   "name": "The Statue",   "fragment": "rigid locked-off compositions, motion comes only from the subject"},
+    {"id": "glide",    "name": "The Glider",   "fragment": "slow floaty dolly glide"}, {"id": "hunter",   "name": "The Hunter",   "fragment": "predatory handheld pursuit energy"},
+    {"id": "crane_poet","name": "The Crane Poet","fragment": "elevated sweeping crane poetry"}, {"id": "shaker",   "name": "The Shaker",   "fragment": "energetic handheld shake and snap moves"},
+    {"id": "orbit_fan","name": "The Orbiter",  "fragment": "obsessive orbiting arcs around subjects"},
+    {"id": "drift_documentary","name":"The Documentary Drift","fragment":"observational drifting documentary movement"},
+    {"id": "vertigo_specialist","name":"The Vertigo Specialist","fragment":"optical dolly-zoom and lens tricks"},
+    {"id": "aerial_forest","name": "The Aerial Aviator","fragment":"sweeping drone and aerial transitions"},
+    {"id": "human_mounted","name": "The Body-Mounted","fragment":"camera strapped to bodies, contact-level movement"}
+  ],
+  "lighting_presets": [
+    {"id": "natural", "name": "Natural",  "fragment": "soft natural daylight"},
+    {"id": "golden",  "name": "Golden Hour","fragment": "warm golden hour backlight"},
+    {"id": "noir",    "name": "Noir",     "fragment": "high-contrast noir key light, deep shadows"},
+    {"id": "studio",  "name": "Studio",   "fragment": "controlled three-point studio lighting"},
+    {"id": "neon",    "name": "Neon Night","fragment": "saturated neon night lighting with mixed sources"},
+    {"id": "candle",  "name": "Firelight","fragment": "flickering warm firelight"},
+    {"id": "custom",  "name": "Custom",   "fragment": "", "custom_fields": ["color", "brightness", "diffusion", "angle"]}
+  ],
+  "palettes": [
+    {"id": "neutral_weave", "name": "Neutral Weave", "grade_fragment": "desaturated neutral grade with soft contrast"},
+    {"id": "kodiak_teal",   "name": "Kodiak Teal",   "grade_fragment": "teal shadows with warm skin tones"},
+    {"id": "bloodline_red", "name": "Bloodline Red", "grade_fragment": "crimson-accented high contrast grade"},
+    {"id": "arctic_blue",   "name": "Arctic Blue",   "grade_fragment": "icy blue monochrome-leaning grade"},
+    {"id": "amber_retro",   "name": "Amber Retro",   "grade_fragment": "warm amber fade with lifted blacks"},
+    {"id": "noir_ink",      "name": "Noir Ink",      "grade_fragment": "black and white ink-noir grade"},
+    {"id": "cyan_dream",    "name": "Cyan Dream",    "grade_fragment": "pastel cyan dreamy grade"},
+    {"id": "desert_gold",   "name": "Desert Gold",   "grade_fragment": "sun-baked golden dust grade"},
+    {"id": "emperial_green","name": "Emerald Green", "grade_fragment": "deep emerald moody grade"},
+    {"id": "vhs_bloom",     "name": "VHS Bloom",     "grade_fragment": "analog VHS chromatic bloom"},
+    {"id": "rose_neon",     "name": "Rose Neon",     "grade_fragment": "pink-magenta neon grade"},
+    {"id": "sepia_archive", "name": "Sepia Archive", "grade_fragment": "sepia archival tint"},
+    {"id": "steel_gray",    "name": "Steel Gray",    "grade_fragment": "cold industrial gray grade"},
+    {"id": "purple_haze",   "name": "Purple Haze",   "grade_fragment": "violet haze grade"},
+    {"id": "candy_pop",     "name": "Candy Pop",     "grade_fragment": "high-saturation candy palette"},
+    {"id": "bleach_bypass", "name": "Bleach Bypass", "grade_fragment": "bleach bypass silver grade"},
+    {"id": "forest_mist",   "name": "Forest Mist",   "grade_fragment": "green mist forest grade"},
+    {"id": "midnight_sapphire","name":"Midnight Sapphire","grade_fragment":"dark sapphire night grade"},
+    {"id": "tangerine_sunset","name":"Tangerine Sunset","grade_fragment":"orange gradient sunset grade"},
+    {"id": "porcelain_film", "name": "Porcelain Film","grade_fragment":"airy porcelain skin-forward grade"},
+    {"id": "copper_pot",    "name": "Copper Pot",    "grade_fragment":"warm copper interior grade"},
+    {"id": "clinical_white","name": "Clinical White","grade_fragment":"bright clinical white grade"},
+    {"id": "toxic_lime",    "name": "Toxic Lime",    "grade_fragment":"acid lime contrast grade"},
+    {"id": "storm_graded",  "name": "Storm Graded",  "grade_fragment":"stormy blue-gray contrast grade"}
+  ],
+  "image_style_presets": [
+    {"id": "editorial_fashion", "name": "Editorial Fashion", "fragment": "high-fashion editorial styling, clean studio backdrop, agency-quality posing"},
+    {"id": "street_glam",       "name": "Street Glam",       "fragment": "night-city street glamour with mixed flash and neon spill"},
+    {"id": "film_portrait",     "name": "Film Portrait",     "fragment": "35mm film portrait with natural grain and halation"},
+    {"id": "product_hero",      "name": "Product Hero",      "fragment": "e-commerce hero product shot, seamless gradient backdrop, controlled reflections"},
+    {"id": "hyper_surreal",     "name": "Hyper Surreal",     "fragment": "surreal cinematic concept imagery with impossible scale"},
+    {"id": "vintage_magazine",  "name": "Vintage Magazine",  "fragment": "scanned vintage magazine print with muted inks"},
+    {"id": "golden_hour_look",  "name": "Golden Hour",       "fragment": "warm backlit golden hour glow"},
+    {"id": "noir_still",        "name": "Noir Still",        "fragment": "monochrome noir still, venetian shadow streaks"}
+  ]
+}
