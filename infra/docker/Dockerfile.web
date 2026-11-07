@@ -8,7 +8,11 @@ FROM node:20-alpine AS build
 WORKDIR /app
 ARG NEXT_PUBLIC_API_URL=http://localhost:8000
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL NEXT_TELEMETRY_DISABLED=1
-COPY packages ./packages
+# The web build copies apps/web flat into /app; the shared-registries import
+# ("../../../packages/...") must resolve at the same relative depth as in the
+# monorepo checkout, hence the root-level /packages path (build-time only —
+# the JSON is bundled into the client chunks and not needed at runtime).
+COPY packages /packages
 COPY --from=deps /app/node_modules ./node_modules
 COPY apps/web ./
 RUN npm run build
