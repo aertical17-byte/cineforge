@@ -28,7 +28,7 @@ export default function ProjectDetail() {
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-ink-300">Generations</h2>
         {(gens.data?.items ?? []).length ? (
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {gens.data.items.flatMap((g) =>
+            {gens.data?.items.flatMap((g) =>
               (assets.data?.items ?? []).filter((a) => a.generation_id === g.id).map((a) => (
                 <div key={a.id} className="overflow-hidden rounded-xl border border-ink-600">
                   {a.kind === "video" ? (
