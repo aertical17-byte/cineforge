@@ -1,0 +1,66 @@
+name: cineforge
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: cineforge
+      POSTGRES_PASSWORD: cineforge
+      POSTGRES_DB: cineforge
+    ports: ["5432:5432"]
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cineforge"]
+      interval: 5s
+      retries: 12
+
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+
+  api:
+    build:
+      context: ../../
+      dockerfile: infra/docker/Dockerfile.api
+    environment: &api_env
+      ENVIRONMENT: production
+      DATABASE_URL: postgresql+asyncpg://cineforge:cineforge@db:5432/cineforge
+      JWT_SECRET: ${JWT_SECRET:-please-change-this-dev-secret-not-for-prod}
+      CORS_ORIGINS: http://localhost:3000,http://127.0.0.1:3000
+      STORAGE_BACKEND: local
+      STORAGE_LOCAL_DIR: /data/storage
+      REDIS_URL: redis://redis:6379/0
+      FREE_SIGNUP_CREDITS: "200"
+    ports: ["8000:8000"]
+    volumes: ["apidata:/data/storage"]
+    depends_on:
+      db: {condition: service_healthy}
+      redis: {condition: service_started}
+
+  worker:
+    build:
+      context: ../../
+      dockerfile: infra/docker/Dockerfile.worker
+    environment: *api_env
+    volumes: ["apidata:/data/storage"]
+    depends_on:
+      db: {condition: service_healthy}
+    ports: []  # internal only (security: no direct worker exposure)
+
+  web:
+    build:
+      context: ../../
+      dockerfile: infra/docker/Dockerfile.web
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:8000
+    environment:
+      NODE_ENV: production
+    ports: ["3000:3000"]
+    depends_on: [api]
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+
+volumes:
+  pgdata:
+  apidata:

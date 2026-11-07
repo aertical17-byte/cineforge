@@ -1,0 +1,15 @@
+# CineForge worker — shares the api codebase, runs the lease queue loop
+FROM python:3.11-slim AS base
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+RUN useradd -m appuser
+WORKDIR /srv
+
+COPY apps/api/requirements.txt ./requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY apps/api/app ./app
+COPY packages ./packages
+RUN mkdir -p /data/storage && chown -R appuser /data /srv
+
+USER appuser
+CMD ["python", "-m", "app.worker_loop"]
