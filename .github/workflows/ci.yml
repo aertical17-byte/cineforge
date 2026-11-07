@@ -35,7 +35,7 @@ jobs:
           cache: pip
       - name: Install API deps
         run: pip install -r apps/api/requirements.txt -r apps/api/requirements-dev.txt
-      - name: Critical-lint gate (real errors only in MVP: syntax/undefined)
+      - name: Critical-lint gate (syntax; undefined names only)
         run: pip install ruff && ruff check --select E9,F821 apps/api
       - name: Migration check (alembic upgrade head on Postgres)
         env:
