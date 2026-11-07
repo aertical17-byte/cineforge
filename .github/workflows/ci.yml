@@ -45,7 +45,7 @@ jobs:
         env:
           DATABASE_URL: sqlite+aiosqlite:///./data/migcheck.db
         run: cd apps/api && alembic upgrade head
-      - name: Unit/integration tests (test env: mock provider only)
+      - name: Unit and integration tests (test env, mock provider only)
         run: cd apps/api && python -m pytest -q
 
   web:
