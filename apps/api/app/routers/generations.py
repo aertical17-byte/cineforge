@@ -17,7 +17,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.db import session
 from app.models import (AIModel, Asset, Generation, GenerationJob, Plan, Subscription,
                         User)
-from app.schemas import GenerationCreate, GenerationDetail, GenerationList, GenerationOut
+from app.schemas import (AssetOut, GenerationCreate, GenerationDetail, GenerationList,
+                         GenerationOut)
 from app.services import credits as credit_svc
 from app.services import jobs as job_svc
 from app.services.auth import current_user

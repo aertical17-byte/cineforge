@@ -16,6 +16,7 @@ from typing import Optional, Tuple
 from sqlalchemy import case, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.config import get_settings
 from app.models import CreditTransaction, Generation, UsageLog
 
 

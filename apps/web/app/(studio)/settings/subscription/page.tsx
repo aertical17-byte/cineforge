@@ -15,7 +15,7 @@ export default function SubscriptionSettings() {
   const sub = useQuery({queryKey: ["my-sub"], queryFn: () => jsonApi<Sub | null>("/v1/my/subscription", "GET")});
 
   const checkout = useMutation({
-    mutationFn: (plan: Plan, interval: "month" | "year") =>
+    mutationFn: ({plan, interval}: {plan: Plan; interval: "month" | "year"}) =>
       jsonApi<{mode: string; message?: string; checkout_url?: string}>("/v1/billing/checkout", "POST", {
         plan_code: plan.code, interval,
       }),
@@ -56,7 +56,7 @@ export default function SubscriptionSettings() {
               {(p.features ?? []).slice(0, 3).map((f: string) => <li key={f}>· {f}</li>)}
             </ul>
             <Button size="sm" className="mt-4" disabled={p.code === "free" || sub.data?.plan_code === p.code}
-              onClick={() => checkout.mutate(p, "month")} data-testid={`buy-${p.code}`}>
+              onClick={() => checkout.mutate({plan: p, interval: "month"})} data-testid={`buy-${p.code}`}>
               {p.code === "free" ? "Included" : sub.data?.plan_code === p.code ? "Current plan" : "Choose"}
             </Button>
           </Card>
