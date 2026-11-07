@@ -15,7 +15,7 @@ describe("design-system primitives", () => {
   });
   it("renders Tabs and switches active programmatically", () => {
     const {getByRole} = render(<Tabs items={[{id: "a", label: "A"}, {id: "b", label: "B"}]} active="b" onChange={() =>undefined} />);
-    expect(getByRole("tab", {name: "b"}).getAttribute("aria-selected")).toBe("true");
+    expect(getByRole("tab", {name: "B"}).getAttribute("aria-selected")).toBe("true");
   });
   it("renders EmptyState body copy", () => {
     const {getByText} = render(<EmptyState title="Nothing yet" body="Run a generation." />);

@@ -67,6 +67,9 @@ def validate_upload(data: bytes, mime: str, max_bytes: int = 32 * 1024 * 1024) -
     return None
 
 
+storage = StorageService()  # process-wide singleton (lazy settings, local dir ensured)
+
+
 def _sniff(data: bytes) -> str | None:
     if data[:8] == b"\x89PNG\r\n\x1a\n":
         return "image/png"

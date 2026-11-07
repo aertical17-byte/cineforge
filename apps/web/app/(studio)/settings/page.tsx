@@ -1,11 +1,6 @@
-import {useEffect} from "react";
+import {redirect} from "next/navigation";
 
-/** /settings → /settings/profile */
+/** /settings → /settings/profile (server-side redirect, no client JS). */
 export default function SettingsIndex() {
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      window.location.replace("/settings/profile");
-    }
-  }, []);
-  return null;
+  redirect("/settings/profile");
 }
