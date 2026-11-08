@@ -184,6 +184,16 @@ class CreditTransactionOut(BaseModel):
     created_at: dt.datetime
 
 
+class UsageOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: str
+    event: str
+    model_id: Optional[str] = None
+    credits_delta: int
+    meta: Dict[str, Any] = {}
+    created_at: dt.datetime
+
+
 # ---------------------------------------------------------------- subscription
 class PlanOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)

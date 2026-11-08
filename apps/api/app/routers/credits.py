@@ -9,7 +9,7 @@ from app.core.config import get_settings
 from app.core.db import session
 from app.models import (AIModel, AIProvider, Asset, CreditTransaction, Notification,
                         Plan, PresetRow, Subscription, Template, UsageLog, User)
-from app.schemas import (CreditSummary, CreditTransactionOut, PlanOut)
+from app.schemas import (CreditSummary, CreditTransactionOut, PlanOut, UsageOut)
 from app.services import credits as credit_svc
 from app.services.auth import current_user
 from pydantic import BaseModel
@@ -46,7 +46,7 @@ async def my_subscription(user: User = Depends(current_user), s: AsyncSession = 
     return sub
 
 
-@router.get("/usage", response_model=list[UsageLog])
+@router.get("/usage", response_model=list[UsageOut])
 async def usage(limit: int = 100, user: User = Depends(current_user), s: AsyncSession = Depends(session)):
     rows = (await s.execute(select(UsageLog).where(UsageLog.user_id == user.id)
                             .order_by(UsageLog.created_at.desc()).limit(limit))).scalars().all()

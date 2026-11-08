@@ -77,7 +77,7 @@ function PresetsShowcase() {
   );
 }
 
-export function Footer() {
+function Footer() {
   return (
     <footer className="mx-auto max-w-6xl px-6 pb-12 text-sm text-ink-300">
       <div className="flex flex-wrap items-center justify-between gap-6 border-t border-ink-700 pt-8">
