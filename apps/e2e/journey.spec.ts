@@ -5,6 +5,15 @@ import {expect, test} from "@playwright/test";
 const EMAIL = `e2e-${Date.now()}@example.com`;
 
 test("full creative journey: register → project → generate (mock engine in test env) → library → credits", async ({page}) => {
+  // Diagnostics (kept in CI logs): API requests/results, browser console, hard errors.
+  page.on("pageerror", (e) => console.log("PAGEERROR:", e.message));
+  page.on("console", (m) => {
+    if (["error", "warning"].includes(m.type())) console.log("CONSOLE:", m.type(), m.text());
+  });
+  page.on("response", (r) => {
+    if (r.url().includes("/v1/")) console.log("HTTP:", r.status(), r.request().method(), new URL(r.url()).pathname);
+  });
+
   // 1. register
   await page.goto("/register");
   await page.getByTestId("reg-name").fill("E2E Director");
@@ -30,8 +39,13 @@ test("full creative journey: register → project → generate (mock engine in t
   await page.getByTestId("prompt").fill("a rain-soaked street, neon reflections, one umbrella");
   await page.getByTestId("generate").click();
 
-  // 4. job progress → asset appears
-  await page.waitForSelector("[data-testid=results] img", {timeout: 30_000});
+  // 4. job progress → asset appears (worker loop must be running for this to finish)
+  try {
+    await page.waitForSelector("[data-testid=results] img", {timeout: 30_000});
+  } catch (e) {
+    console.log("RESULTS_WAIT_FAILED_AT_URL:", page.url());
+    throw e;
+  }
 
   // 5. library shows the asset; credits decreased (mock base 1 cr)
   await page.goto("/library");

@@ -99,6 +99,15 @@ jobs:
           ADMIN_EMAILS: admin@example.com
           CORS_ORIGINS: http://127.0.0.1:3000
         run: uvicorn app.main:app --host 127.0.0.1 --port 8000 &
+      - name: Start worker loop (same env; production topology runs the worker as its own process)
+        working-directory: apps/api
+        env:
+          ENVIRONMENT: test
+          AI_MOCK_MODE: "1"
+          DATABASE_URL: sqlite+aiosqlite:///./data/e2e.db
+          ADMIN_EMAILS: admin@example.com
+          CORS_ORIGINS: http://127.0.0.1:3000
+        run: python -m app.worker_loop &
       - name: Start web dev server
         working-directory: apps/web
         env:
