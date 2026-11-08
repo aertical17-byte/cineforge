@@ -229,10 +229,14 @@ class ProviderRegistryStatus(Base):
 
 # ----------------------------------------------------------------------------- registries
 class PresetRow(Base):
-    """Generic registry table seeded from packages/shared/data/creative_registries.json."""
+    """Generic registry table seeded from packages/shared/data/creative_registries.json.
+
+    Registry rows are (group, id) pairs: the same short id may legitimately exist in
+    two groups (e.g. \"noir\" as genre and as lighting preset), so the PK is composite.
+    """
     __tablename__ = "preset_rows"
     id: Mapped[str] = mapped_column(String(60), primary_key=True)
-    group: Mapped[str] = mapped_column(String(40), index=True, nullable=False)  # camera_moves|palettes|...
+    group: Mapped[str] = mapped_column(String(40), primary_key=True)  # camera_moves|palettes|...
     name: Mapped[str] = mapped_column(String(80), nullable=False)
     payload: Mapped[Dict[str, Any]] = mapped_column(JSON, default=dict)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
