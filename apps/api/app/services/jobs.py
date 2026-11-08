@@ -146,7 +146,8 @@ async def finish(session: AsyncSession, job: GenerationJob, result: GenerateResu
     job.provider_job_ref = result.provider_job_ref
     gen.status = "succeeded"
     gen.completed_at = dt.datetime.now(dt.timezone.utc)
-    dl: Downloaded = await get_provider_for_model(session, gen.model_id).download(result.urls)
+    provider = await get_provider_for_model(session, gen.model_id)
+    dl: Downloaded = await provider.download(result.urls)
     urls: List[str] = []
     for data, mime in zip(dl.items[: max(1, gen.batch_size)], dl.mimes):
         kind = "image" if mime.startswith("image") else ("video" if mime.startswith("video") else
