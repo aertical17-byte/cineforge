@@ -11,7 +11,10 @@ test("full creative journey: register → project → generate (mock engine in t
     if (["error", "warning"].includes(m.type())) console.log("CONSOLE:", m.type(), m.text());
   });
   page.on("response", (r) => {
-    if (r.url().includes("/v1/")) console.log("HTTP:", r.status(), r.request().method(), new URL(r.url()).pathname);
+    const p = new URL(r.url()).pathname;
+    if (r.url().includes("/v1/") || p.startsWith("/files/")) {
+      console.log("HTTP:", r.status(), r.request().method(), p);
+    }
   });
   page.on("framenavigated", (f) => {
     if (f === page.mainFrame()) console.log("NAV:", f.url());
@@ -47,6 +50,18 @@ test("full creative journey: register → project → generate (mock engine in t
   } catch (e) {
     console.log("RESULTS_WAIT_FAILED_AT_URL:", page.url());
     console.log("AUTH_STORAGE:", await page.evaluate(() => localStorage.getItem("cineforge-auth")));
+    console.log("RESULT_PANEL_HTML:", await page.evaluate(() => {
+      const p = document.querySelector("[data-testid=results]");
+      return p ? p.innerHTML.slice(0, 1200) : "(no [data-testid=results] in DOM)";
+    }));
+    console.log("RESULT_IMG_GEO:", await page.evaluate(() => {
+      const i = document.querySelector("[data-testid=results] img");
+      if (!i) return "(no img)";
+      const r = i.getBoundingClientRect();
+      const cs = window.getComputedStyle(i);
+      return JSON.stringify({w: r.width, h: r.height, nat: i.naturalWidth, natH: i.naturalHeight,
+        complete: i.complete, src: i.currentSrc || i.src, display: cs.display, visibility: cs.visibility});
+    }));
     throw e;
   }
 
