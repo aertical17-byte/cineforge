@@ -4,7 +4,7 @@ import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import Link from "next/link";
 import {useEffect, useMemo, useState} from "react";
 
-import {jsonApi, rawUpload} from "@/lib/api";
+import {assetSrc, jsonApi, rawUpload} from "@/lib/api";
 import {cameraMoves, names} from "@/lib/registries";
 import {useAuthStore} from "@/lib/store";
 import type {AIModel, Asset, GenerationDetail, Project} from "@/lib/types";
@@ -254,7 +254,7 @@ export function Workspace({type}: {type: "image" | "video" | "edit"}) {
             {refs.map((r) => (
               <div key={r.id} className="group relative overflow-hidden rounded-lg border border-ink-600">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={r.url} alt="reference" className="h-16 w-full object-cover" />
+                <img src={assetSrc(r.url)} alt="reference" className="h-16 w-full object-cover" />
                 <button className="absolute right-1 top-1 hidden rounded bg-black/70 px-1 text-[10px] group-hover:block"
                   onClick={() => setRefs((prev) => prev.filter((x) => x.id !== r.id))}>✕</button>
               </div>
@@ -352,13 +352,13 @@ function ResultsPanel({detail, active}: {detail?: GenerationDetail; active: stri
             : detail.assets.map((a) => (
               <div key={a.id} className="overflow-hidden rounded-xl border border-ink-600">
                 {a.kind === "video" ? (
-                  <video src={a.url} controls className="w-full" />
+                  <video src={assetSrc(a.url)} controls className="w-full" />
                 ) : (
                   /* eslint-disable-next-line @next/next/no-img-element */
-                  <img src={a.url} alt="generation result" className="w-full cursor-zoom-in" />
+                  <img src={assetSrc(a.url)} alt="generation result" className="w-full cursor-zoom-in" />
                 )}
                 <div className="flex justify-between p-2 text-[11px] text-ink-300">
-                  <a href={a.url} download target="_blank" rel="noreferrer" className="underline">download</a>
+                  <a href={assetSrc(a.url)} download target="_blank" rel="noreferrer" className="underline">download</a>
                   <span>{new Date(a.created_at).toLocaleTimeString()}</span>
                 </div>
               </div>

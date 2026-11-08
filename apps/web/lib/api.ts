@@ -49,3 +49,12 @@ export async function rawUpload(path: string, file: File, purpose = "reference")
     body: fd,
   });
 }
+
+/**
+ * Resolve an asset media URL for the <img>/<video>/<a> src.
+ * Local/CI storage returns app-relative "/files/…" paths — those must point at the
+ * API origin (the web app cannot serve them). S3/CDN returns absolute URLs untouched.
+ */
+export function assetSrc(url: string): string {
+  return url.startsWith("/") ? `${API_URL}${url}` : url;
+}
