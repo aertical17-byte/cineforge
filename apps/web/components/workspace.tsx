@@ -120,7 +120,11 @@ export function Workspace({type}: {type: "image" | "video" | "edit"}) {
     },
     onError: (e) => {
       const d = (e as Error & {detail?: unknown}).detail;
-      setErr(typeof d === "string" ? d : "generation rejected — check the form");
+      setErr(typeof d === "string"
+        ? d
+        : (d && typeof d === "object" && "message" in d && typeof (d as {message?: unknown}).message === "string")
+          ? (d as {message: string}).message
+          : "generation rejected — check the form");
     },
   });
 

@@ -118,7 +118,8 @@ async def create_generation(body: GenerationCreate, user: User = Depends(current
     except credit_svc.InsufficientCredits as e:
         await s.rollback()
         raise HTTPException(status.HTTP_402_PAYMENT_REQUIRED,
-                            f"insufficient credits: need {e.need}, have {e.have}")
+                            {"code": "INSUFFICIENT_CREDITS", "need": e.need, "have": e.have,
+                             "message": f"insufficient credits: need {e.need}, have {e.have}"})
     except Exception:
         await s.rollback()
         raise

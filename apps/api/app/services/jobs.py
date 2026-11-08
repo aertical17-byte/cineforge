@@ -179,7 +179,10 @@ async def run_job(session: AsyncSession, job: GenerationJob):
         await fail(session, job, ProviderError("generation row missing"))
         return
     settings = get_settings()
-    if gen.created_at and (dt.datetime.now(dt.timezone.utc) - gen.created_at) > dt.timedelta(seconds=settings.job_timeout_seconds):
+    created = gen.created_at
+    if created and created.tzinfo is None:  # SQLite returns naive datetimes
+        created = created.replace(tzinfo=dt.timezone.utc)
+    if created and (dt.datetime.now(dt.timezone.utc) - created) > dt.timedelta(seconds=settings.job_timeout_seconds):
         await fail(session, job, ProviderError("job timeout"))
         return
     model = (await session.execute(select(AIModel).where(AIModel.id == gen.model_id))).scalar_one_or_none()

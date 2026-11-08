@@ -61,17 +61,28 @@ async def test_insufficient_credits_rejected_with_402(client):
     tok = await _token(http, "credits.c@example.com")
     h = auth_header(tok)
 
-    oversized = await http.post("/v1/generations", headers=h, json={
+    const_request = {
         "media_type": "video", "task": "text2video", "model_id": "wan-14b",
-        "prompt": "too expensive", "duration_s": 8, "project_id": None,
-    })
-    # 200 credit balance vs 42 credits (10 + 4*8) — should succeed actually; instead assert cost math
-    assert oversized.status_code == 201
-    body = oversized.json()
-    assert body["estimated_credits"] == 42
+        "prompt": "spend down", "duration_s": 8, "project_id": None,
+    }
+    first = await http.post("/v1/generations", headers=h, json=const_request)
+    assert first.status_code == 201, first.text
+    cost = first.json()["estimated_credits"]
+    assert cost == 42  # 10 base + 4 * 8s — the deterministic formula users see on the button
 
-    insolvent = await http.post("/v1/generations", headers=h, json={
-        "media_type": "video", "task": "text2video", "model_id": "wan-14b",
-        "prompt": "long", "duration_s": 8, "idempotency_key": None,
-    })
-    assert insolvent.status_code == 402
+    async def balance() -> int:
+        return (await http.get("/v1/credits/summary", headers=h)).json()["balance"]
+
+    assert (await balance()) == 200 - cost  # reserved up-front in the same transaction
+
+    # Spend down deterministically; the ledger must never go below zero.
+    for _ in range(10):
+        if (await balance()) < cost:
+            break
+        r = await http.post("/v1/generations", headers=h, json=const_request)
+        assert r.status_code in (201, 402), r.text
+
+    insolvent = await http.post("/v1/generations", headers=h, json=const_request)
+    assert insolvent.status_code == 402, insolvent.text
+    assert insolvent.json()["detail"]["code"] == "INSUFFICIENT_CREDITS"
+    assert (await balance()) < cost  # still solvent invariants: no negative balance

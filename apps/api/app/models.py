@@ -57,7 +57,9 @@ class User(Base):
     updated_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=now)
     deleted_at: Mapped[Optional[dt.datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
 
-    profile: Mapped[Optional["Profile"]] = relationship(back_populates="user", uselist=False)
+    # 1:1 — eager-loaded so UserOut serialization never triggers a lazy IO inside
+    # FastAPI's (sync) response validation path (MissingGreenlet on async drivers).
+    profile: Mapped[Optional["Profile"]] = relationship(back_populates="user", uselist=False, lazy="selectin")
 
 
 class Profile(Base):
