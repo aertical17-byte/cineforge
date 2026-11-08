@@ -13,10 +13,10 @@ from typing import Any
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.paths import shared_registry_path
 from app.models import AIModel, AIProvider, Plan, PresetRow, Template
-from pathlib import Path as _P
 
-DATA = _P(__file__).resolve().parents[3] / "packages" / "shared" / "data" / "creative_registries.json"
+DATA = shared_registry_path()
 
 PLANS = [
     dict(code="free", name="Free", monthly_price_cents=0, yearly_price_cents=0, monthly_credits=100,

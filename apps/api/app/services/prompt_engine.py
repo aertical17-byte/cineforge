@@ -13,11 +13,11 @@ import json
 from functools import lru_cache
 from typing import Any, Dict, List, Optional, Tuple
 
+from app.core.paths import shared_registry_path
 from app.providers.base import ImageRequest, VideoRequest
 from app.services.registry import caps, credit_cost  # re-export convenience
-from pathlib import Path
 
-_REGISTRY_JSON = Path(__file__).resolve().parents[3] / "packages" / "shared" / "data" / "creative_registries.json"
+_REGISTRY_JSON = shared_registry_path()
 
 
 @lru_cache(maxsize=1)
