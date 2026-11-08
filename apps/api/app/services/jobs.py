@@ -238,8 +238,10 @@ async def process_pending(batch: int = 8):
             job = await claim_next_job(session, is_postgres=is_pg)
             if not job:
                 break
+            log.info("claimed job %s (attempt %d) gen %s", job.id, job.attempt, job.generation_id)
             try:
                 await run_job(session, job)
+                log.info("job %s finished", job.id)
             except Exception:  # noqa: BLE001
                 await session.rollback()
                 raise

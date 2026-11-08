@@ -123,12 +123,39 @@ jobs:
       - name: Run E2E journey
         working-directory: apps/e2e
         run: npx playwright test
-      - name: Upload artifacts on failure
+      - name: Upload playwright artifacts
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
           path: apps/e2e/playwright-report
+      - name: Dump runtime state (always; worker log + DB inventory + process census)
+        if: always()
+        run: |
+          set +e
+          echo "== process census =="
+          ps -eo pid,cmd | grep -E "worker_loop|uvicorn|next dev" | grep -v grep
+          echo
+          echo "== worker.log (tail) =="
+          tail -n 80 apps/api/data/worker.log 2>/dev/null || echo "(no worker.log)"
+          echo
+          echo "== DB inventory =="
+          python3 - <<'EOF'
+          import json, os, sqlite3
+          db = "apps/api/data/e2e.db"
+          if not os.path.isfile(db):
+              print("no e2e.db found at", os.path.abspath(db))
+          else:
+              con = sqlite3.connect(db, timeout=10)
+              cur = con.cursor()
+              for table in ("generations", "generation_jobs", "assets", "credit_transactions"):
+                  try:
+                      rows = cur.execute(f"select * from {table}").fetchall()
+                      cols = [d[0] for d in cur.description]
+                      print(table, json.dumps([dict(zip(cols, r)) for r in rows], default=str)[:4000])
+                  except Exception as e:
+                      print(table, "ERR", e)
+          EOF
 
   docker:
     name: Containers build

@@ -21,6 +21,11 @@ def make_engine():
         # SQLite does not create missing directories; do it ourselves so a fresh
         # checkout (or CI job) can run migrations/tests without manual setup.
         Path(url.database).parent.mkdir(parents=True, exist_ok=True)
+        # Multi-process SQLite (API + worker share one file in dev/CI): wait out the
+        # other process's write locks instead of erroring. WAL itself is switched on
+        # by the worker (it is persistent per-file) since pragmas must run in async land.
+        return create_async_engine(settings.database_url, echo=settings.db_echo, future=True,
+                                   connect_args={"timeout": 30})
     return create_async_engine(settings.database_url, echo=settings.db_echo, future=True)
 
 
