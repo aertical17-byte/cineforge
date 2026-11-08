@@ -21,6 +21,7 @@ import pytest  # noqa: E402
 from httpx import ASGITransport, AsyncClient  # noqa: E402
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine  # noqa: E402
 
+import app.models  # noqa: F401,E402  register all tables on Base.metadata BEFORE create_all
 from app.core.config import get_settings  # noqa: E402
 get_settings.cache_clear()  # freeze settings for the test env
 

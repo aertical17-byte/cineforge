@@ -1,0 +1,1 @@
+# Static assets served at the site root. Kept non-empty for Docker COPY.
