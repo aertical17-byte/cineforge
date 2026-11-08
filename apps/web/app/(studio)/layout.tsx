@@ -11,14 +11,17 @@ import {useAuthStore} from "@/lib/store";
 /** Studio layout + auth guard for every /workspace surface. */
 export default function StudioLayout({children}: {children: React.ReactNode}) {
   const token = useAuthStore((s) => s.token);
+  const hydrated = useAuthStore((s) => s.hydrated);
   const router = useRouter();
   const pathname = usePathname();
   const qc = useQueryClient();
 
   useEffect(() => {
-    if (!token) router.replace(`/login?next=${encodeURIComponent(pathname)}`);
-  }, [token, router, pathname]);
+    // Wait for persisted-state rehydration first: redirecting before that races a reload.
+    if (hydrated && !token) router.replace(`/login?next=${encodeURIComponent(pathname)}`);
+  }, [hydrated, token, router, pathname]);
 
+  if (!hydrated) return <div className="p-10 text-sm text-ink-300">Loading studio…</div>;
   if (!token) return <div className="p-10 text-sm text-ink-300">Redirecting to login…</div>;
 
   return (

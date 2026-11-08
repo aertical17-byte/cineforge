@@ -13,6 +13,9 @@ test("full creative journey: register → project → generate (mock engine in t
   page.on("response", (r) => {
     if (r.url().includes("/v1/")) console.log("HTTP:", r.status(), r.request().method(), new URL(r.url()).pathname);
   });
+  page.on("framenavigated", (f) => {
+    if (f === page.mainFrame()) console.log("NAV:", f.url());
+  });
 
   // 1. register
   await page.goto("/register");
@@ -44,6 +47,7 @@ test("full creative journey: register → project → generate (mock engine in t
     await page.waitForSelector("[data-testid=results] img", {timeout: 30_000});
   } catch (e) {
     console.log("RESULTS_WAIT_FAILED_AT_URL:", page.url());
+    console.log("AUTH_STORAGE:", await page.evaluate(() => localStorage.getItem("cineforge-auth")));
     throw e;
   }
 
