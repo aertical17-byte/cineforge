@@ -34,11 +34,10 @@ test("full creative journey: register → project → generate (mock engine in t
   // 3. generate an image with the mock engine (AI_MOCK_MODE=1 deployment)
   await page.goto("/create/image");
   await page.waitForSelector("[data-testid=prompt]");
-  const modelSet = await page.locator("[data-testid=model-select] option").first().textContent();
-  if (modelSet) {
-    const value = await page.locator("[data-testid=model-select] option").first().getAttribute("value");
-    await page.selectOption("[data-testid=model-select]", value!);
-  }
+  // Generate with the mock engine on purpose: this e2e deployment has no live
+  // provider keys, so any real engine would honestly end in provider_not_configured.
+  // The journey checks the product flow (form → job → asset), not someone else's API.
+  await page.selectOption("[data-testid=model-select]", "mock-engine");
   await page.getByTestId("prompt").fill("a rain-soaked street, neon reflections, one umbrella");
   await page.getByTestId("generate").click();
 

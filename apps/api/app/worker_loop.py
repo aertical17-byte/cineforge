@@ -38,7 +38,10 @@ async def _cancel_guard():
         )).scalars().all()
         # cancellation is handled in the API router; worker-side guard verifies lease staleness
         for job in canceled:
-            if job.claimed_at and (dt.datetime.now(dt.timezone.utc) - job.claimed_at).total_seconds() > 900:
+            # SQLite returns naive datetimes; normalize to aware-UTC before subtracting.
+            lease = (job.claimed_at.replace(tzinfo=dt.timezone.utc)
+                     if job.claimed_at and job.claimed_at.tzinfo is None else job.claimed_at)
+            if lease and (dt.datetime.now(dt.timezone.utc) - lease).total_seconds() > 900:
                 job.status = "queued"
                 job.claimed_by = None
         await s.commit()

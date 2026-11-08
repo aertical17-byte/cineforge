@@ -200,8 +200,11 @@ async def run_job(session: AsyncSession, job: GenerationJob):
             ff = await storage.public_or_signed_url(a.url, a.storage_key)
     prompt = prompt_engine.compose_prompt(gen.prompt, params.get("film_setup"),
                                           params.get("camera_move"), params.get("emotion_strength"))
-    provider = await get_provider_for_model(session, gen.model_id)
     try:
+        # Resolution happens INSIDE the try: with no API key the adapter constructor
+        # raises ProviderNotConfigured, and a raise outside this block left a claimed
+        # job stuck in "running" forever (lease committed, no requeue, no fail state).
+        provider = await get_provider_for_model(session, gen.model_id)
         if gen.media_type == "image":
             req = prompt_engine.build_image_request(
                 model, prompt, gen.negative_prompt, params.get("aspect_ratio", "1:1"),
@@ -222,6 +225,10 @@ async def run_job(session: AsyncSession, job: GenerationJob):
             result = await provider.generate_video(req)
             result.kind = "video"
         await finish(session, job, result)
+    except ProviderNotConfigured as e:
+        # Never put this on the retry list: no key materializes mid-retry. Fail the
+        # generation with the explicit provider_not_configured state and refund.
+        await fail(session, job, e)
     except ProviderError as e:
         await _requeue_with_backoff(session, job, e)
     except asyncio.TimeoutError as e:
