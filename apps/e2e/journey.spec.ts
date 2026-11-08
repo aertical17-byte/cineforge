@@ -1,6 +1,8 @@
 import {expect, test} from "@playwright/test";
 
-const EMAIL = `e2e-${Date.now()}@cineforge.test`;
+// NOTE: email-validator rejects IANA special-use domains (like .test) at parse time;
+// example.com is the reserved-but-acceptable placeholder the library permits.
+const EMAIL = `e2e-${Date.now()}@example.com`;
 
 test("full creative journey: register → project → generate (mock engine in test env) → library → credits", async ({page}) => {
   // 1. register
