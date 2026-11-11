@@ -1,6 +1,6 @@
 "use client";
 
-import {ButtonHTMLAttributes, DetailedHTMLProps, forwardRef, InputHTMLAttributes, ReactNode} from "react";
+import {ButtonHTMLAttributes, DetailedHTMLProps, HTMLAttributes, InputHTMLAttributes, ReactNode, forwardRef} from "react";
 
 type ButtonProps = DetailedHTMLProps<ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
   variant?: "primary" | "ghost" | "outline" | "danger";
@@ -28,11 +28,19 @@ export function Input({className = "", ...rest}: InputHTMLAttributes<HTMLInputEl
   );
 }
 
-export function Card({children, className = ""}: {children: ReactNode; className?: string}) {
-  return <div className={`rounded-xl2 border border-ink-700 bg-ink-850 shadow-card ${className}`}>{children}</div>;
+type CardProps = DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
+
+/** Card forwards ALL standard div props (ids, data-testids, handlers) — callers rely on it. */
+export function Card({children, className = "", ...rest}: CardProps) {
+  return <div className={`rounded-xl2 border border-ink-700 bg-ink-850 shadow-card ${className}`} {...rest}>{children}</div>;
 }
 
-export function Badge({children, tone = "neutral", className = ""}: {children: ReactNode; tone?: "neutral" | "accent" | "warn" | "err" | "ok"; className?: string}) {
+type BadgeProps = DetailedHTMLProps<HTMLAttributes<HTMLSpanElement>, HTMLSpanElement> & {
+  tone?: "neutral" | "accent" | "warn" | "err" | "ok";
+};
+
+/** Badge forwards standard span props too (data-testids in tests). */
+export function Badge({children, tone = "neutral", className = "", ...rest}: BadgeProps) {
   const tones = {
     neutral: "bg-ink-700 text-ink-100",
     accent: "bg-byz-500/15 text-byz-300 border border-byz-500/25",
@@ -40,7 +48,7 @@ export function Badge({children, tone = "neutral", className = ""}: {children: R
     err: "bg-ember/15 text-ember",
     ok: "bg-emerald-500/15 text-emerald-300",
   }[tone];
-  return <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium ${tones} ${className}`}>{children}</span>;
+  return <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium ${tones} ${className}`} {...rest}>{children}</span>;
 }
 
 export function Modal({open, onClose, title, children}: {open: boolean; onClose: () => void; title?: string; children: ReactNode}) {
