@@ -31,6 +31,9 @@ services:
       STORAGE_LOCAL_DIR: /data/storage
       REDIS_URL: redis://redis:6379/0
       FREE_SIGNUP_CREDITS: "200"
+      # Free community generation: anonymous AI Horde key, no signup/card needed.
+      AIHORDE_ENABLED: "true"
+      AIHORDE_API_KEY: ${AIHORDE_API_KEY:-0000000000}
     ports: ["8000:8000"]
     volumes: ["apidata:/data/storage"]
     depends_on:

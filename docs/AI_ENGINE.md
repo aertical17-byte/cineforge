@@ -25,6 +25,13 @@
 ### Mock (`providers/mock.py`) — tests only
 - Emits obviously artificial gradient-`<svg>` "MOCK IMAGE/MOCK VIDEO" rasters; decode-through in `download()`. E2E asserts UI states, never mistaking raster for a model result (see docs/SECURITY.md §mock).
 
+### AI Horde (`providers/aihorde.py`) — free, keyless `[V]`
+- Open-source community project (github.com/Haidra-org/AI-Horde; volunteers share GPU time). Anonymous access with the well-known public key of ten zeros: no signup, no card, no quota purchase — the budget-0 generation path.
+- Flow: `POST /generate/async` → `GET /generate/check/{id}` → `GET /generate/status/{id}` → image URL; anonymous tier ≈512px long side, ≈1 concurrent job per key. HTTP 429 raises `ProviderError` so the worker requeues with backoff instead of failing the job.
+- Negative prompt rides the documented `prompt ### negative` separator; steps capped at 50; `r2: true` asks for direct artifact URLs (downloaded immediately by our worker, since they are short-lived).
+- Images only — video requests raise `ProviderUnsupported` and the UI states it honestly. Disabled in test env so CI stays hermetic; enable with `AIHORDE_ENABLED=1` (default ON in docker compose; seed model `horde-sdxl`, 2cr/image).
+- Live proof: `.github/workflows/live-smoke.yml` (manual dispatch) generates one real image with zero credentials and uploads it as an artifact.
+
 ## 3. Prompt engine (`services/prompt_engine.py`)
 
 - `compose_prompt(prompt, film_setup, camera_move, emotion)`: renders only registry-backed fragments (genres/eras/tempo/bodies/lenses/apertures/palettes/lighting/speedramps/movesets) — original wording from `packages/shared/data/creative_registries.json`.

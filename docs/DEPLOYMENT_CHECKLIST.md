@@ -7,6 +7,7 @@
 - [ ] Generating `JWT_SECRET` (≥64 random chars)
 - [ ] Optional: REPLICATE_API_TOKEN and/or FAL_KEY (provider engines)
 - [ ] Optional: STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, STRIPE_PRICE_MONTHLY/YEARLY (real Stripe Price IDs)
+- [x] FREE by default: AIHORDE_ENABLED=true → free community image generation with NO key, NO signup (anonymous AI Horde; compose default). Live proof: Actions → live-smoke workflow.
 - [ ] Optional S3-compatible bucket + keys (else local-disk storage works for a single host)
 
 ## B. Bring-up (compose)

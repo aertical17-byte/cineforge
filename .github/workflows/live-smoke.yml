@@ -1,0 +1,36 @@
+name: live-smoke
+
+# Manual, on-demand live verification — never runs on push (main CI stays hermetic).
+# Proves the 0-budget path end to end: AI Horde anonymous (no signup, no card) generates
+# one real image and uploads it as an artifact.
+on:
+  workflow_dispatch:
+
+jobs:
+  horde-free-smoke:
+    name: Live smoke · AI Horde free community generation
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install (httpx only — the adapter has no heavy deps)
+        run: pip install httpx
+      - name: Reachability probe (anonymous key, no media generated)
+        working-directory: apps/api
+        run: python scripts/verify_providers.py logs/verify_providers.json
+      - name: One REAL free generation through the anonymous path
+        working-directory: apps/api
+        run: python scripts/verify_providers.py logs/verify_providers_gen.json --generate
+      - name: Upload smoke artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: horde-free-smoke
+          path: |
+            apps/api/logs/horde-smoke.webp
+            apps/api/logs/verify_providers.json
+            apps/api/logs/verify_providers_gen.json
+          if-no-files-found: warn
