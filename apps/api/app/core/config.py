@@ -46,6 +46,11 @@ class Settings(BaseSettings):
     fal_key: Optional[str] = None
     openai_api_key: Optional[str] = None  # reserved future adapter
 
+    # free community generation (no signup, no card): github.com/Haidra-org/AI-Horde
+    aihorde_enabled: bool = False  # turn on in deployments that accept free-tier queue waits
+    aihorde_api_key: str = "0000000000"  # well-known anonymous key; a registered key raises concurrency
+    aihorde_client_agent: str = "CineForgeAI:0.2:cineforge"
+
     # --- billing (Stripe optional)
     stripe_secret_key: Optional[str] = None
     stripe_webhook_secret: Optional[str] = None

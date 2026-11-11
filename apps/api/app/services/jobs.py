@@ -16,6 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.config import get_settings
 from app.core.db import SessionFactory
 from app.models import AIModel, Asset, Generation, GenerationJob, Notification, UsageLog
+from app.providers.aihorde import AIHordeProvider
 from app.providers.base import (AIProvider, Downloaded, GenerateResult, JobState,
                                 ProviderError, ProviderNotConfigured, ProviderUnsupported)
 from app.providers.fal import FalProvider
@@ -38,6 +39,11 @@ async def get_provider(provider_id: str) -> AIProvider:
         return ReplicateProvider(s.replicate_api_token)
     if provider_id == "fal":
         return FalProvider(s.fal_key)
+    if provider_id == "aihorde":
+        if not s.aihorde_enabled or s.environment == "test":
+            # tests stay hermetic; deployments opt in via AIHORDE_ENABLED=1
+            raise ProviderNotConfigured("aihorde")
+        return AIHordeProvider(s.aihorde_api_key, s.aihorde_client_agent)
     if provider_id == "mock":
         if s.environment != "test":
             raise ProviderNotConfigured("mock")
