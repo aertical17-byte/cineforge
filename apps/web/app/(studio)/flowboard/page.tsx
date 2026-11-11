@@ -236,7 +236,7 @@ function NodeCard({index, step, models, onPatch, onRemove, canRemove}: {
 function StepResult({step}: {step: PipelineDetail["steps"][number]}) {
   const st = step.status;
   return (
-    <div className="overflow-hidden rounded-xl border border-ink-600 bg-ink-900/60" data-testid={`flow-step-${st.index}`}>
+    <div className="overflow-hidden rounded-xl border border-ink-600 bg-ink-900/60" data-testid={`flow-step-${step.index}`}>
       <div className="flex items-center justify-between px-3 py-2 text-xs">
         <span className="font-semibold">{step.kind === "image" ? "🖼" : "🎬"} step {step.index + 1}</span>
         <Badge tone={st === "succeeded" ? "ok" : st === "failed" ? "err"
