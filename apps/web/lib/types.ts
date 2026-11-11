@@ -80,6 +80,31 @@ export interface GenerationDetail extends Generation {
   assets: Asset[];
 }
 
+export interface PipelineStep {
+  index: number;
+  kind: string;
+  prompt: string;
+  model_id: string;
+  task: string;
+  status: string;
+  generation_id: string | null;
+  error_message: string;
+  assets: Asset[];
+}
+
+export interface Pipeline {
+  id: string;
+  name: string;
+  project_id: string | null;
+  status: string;
+  error_message: string;
+  created_at: string;
+}
+
+export interface PipelineDetail extends Pipeline {
+  steps: PipelineStep[];
+}
+
 export interface Project {
   id: string;
   name: string;

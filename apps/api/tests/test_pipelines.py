@@ -34,17 +34,29 @@ async def test_chain_spawns_next_step_and_succeeds(client):
     assert d["steps"][1]["generation_id"] is None
 
     from app.services.jobs import process_pending
-    await process_pending(batch=4)  # image step
 
-    d = (await http.get(f"/v1/pipelines/{pid}", headers=h)).json()
+    async def drained(rounds: int = 12):
+        """process_pending shares one SQLite DB with every test file; earlier tests
+        (e.g. the 402-insolvency test) intentionally leave queued jobs behind, so
+        drain rounds until THIS pipeline's step actually settles."""
+        for _ in range(rounds):
+            d = (await http.get(f"/v1/pipelines/{pid}", headers=h)).json()
+            if d["steps"][0]["status"] in ("succeeded", "failed"):
+                return d
+            await process_pending(batch=4)
+        return (await http.get(f"/v1/pipelines/{pid}", headers=h)).json()
+
+    d = await drained()  # image step
     assert d["steps"][0]["status"] == "succeeded"
     assert d["steps"][0]["assets"], "image step produced an asset"
     assert d["steps"][1]["generation_id"] is not None, "worker spawned the video step"
     assert d["steps"][1]["task"] == "img2video", "video step is fed by the previous asset"
 
-    await process_pending(batch=4)  # video step
-
-    d = (await http.get(f"/v1/pipelines/{pid}", headers=h)).json()
+    for _ in range(12):  # video step
+        d = (await http.get(f"/v1/pipelines/{pid}", headers=h)).json()
+        if d["status"] in ("succeeded", "failed", "canceled"):
+            break
+        await process_pending(batch=4)
     assert d["status"] == "succeeded", d
     assert all(st["status"] == "succeeded" for st in d["steps"])
     assert all(st["assets"] for st in d["steps"])

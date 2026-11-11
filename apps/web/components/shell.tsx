@@ -15,6 +15,7 @@ const NAV = [
     {href: "/create/image", label: "Image", icon: "🖼"},
     {href: "/create/video", label: "Video", icon: "🎬"},
     {href: "/create/edit", label: "Edit & Enhance", icon: "🪄"},
+    {href: "/flowboard", label: "Flowboard", icon: "⛓"},
   ]},
   {section: "Work", links: [
     {href: "/dashboard", label: "Dashboard", icon: "◈"},
