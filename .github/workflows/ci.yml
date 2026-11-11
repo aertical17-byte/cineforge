@@ -162,6 +162,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Validate compose file (deployment drift check)
+        run: docker compose -f infra/docker/docker-compose.yml config -q
       - name: Build API image
         run: docker build -f infra/docker/Dockerfile.api -t cineforge-api:sha-${{ github.sha }} .
       - name: Build Worker image

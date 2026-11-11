@@ -12,7 +12,8 @@
 ## B. Bring-up (compose)
 
 1. `cp .env.example .env` → fill values.
-2. `docker compose -f infra/docker/docker-compose.yml up -d --build`
+2. Either run `bash infra/deploy.sh` (builds, starts, waits for `/health`), or manually:
+   `docker compose -f infra/docker/docker-compose.yml up -d --build`
 3. Health: `curl api:8000/health` → `{"ok":true}`
 4. First operator: set `ADMIN_EMAILS=you@yourdomain` then register with that email (admin is granted at registration time).
 5. Verify `/v1/providers` reflects your configured engines.
