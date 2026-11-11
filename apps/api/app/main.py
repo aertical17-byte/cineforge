@@ -17,6 +17,7 @@ from app.core.config import get_settings
 from app.core.db import Base, SessionFactory, engine, session
 from app.models import AuditLog  # noqa: F401 (model import registers tables)
 from app.routers import (admin, assets, auth, billing, credits, elements, generations,
+                         pipelines,
                          projects, users)
 from app.services.seed import seed
 
@@ -78,6 +79,7 @@ app.include_router(projects.router)
 app.include_router(assets.router)
 app.include_router(assets.router_files)
 app.include_router(generations.router)
+app.include_router(pipelines.router)
 app.include_router(credits.router)
 app.include_router(billing.router)
 app.include_router(elements.router)

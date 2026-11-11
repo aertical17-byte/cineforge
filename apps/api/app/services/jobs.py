@@ -22,6 +22,7 @@ from app.providers.fal import FalProvider
 from app.providers.mock import MockProvider
 from app.providers.replicate import ReplicateProvider
 from app.services import credits as credit_svc
+from app.services import pipelines as pipeline_svc
 from app.services import prompt_engine
 from app.services.registry import caps
 from app.services.storage import storage
@@ -123,6 +124,7 @@ async def fail(session: AsyncSession, job: GenerationJob, err: Exception):
     if gen:
         gen.status = FAILED
         gen.error_code = code
+        await pipeline_svc.mark_failed(session, gen, msg)
         gen.error_message = msg[:380]
         gen.completed_at = dt.datetime.now(dt.timezone.utc)
         if gen.actual_credits > 0:
@@ -166,6 +168,7 @@ async def finish(session: AsyncSession, job: GenerationJob, result: GenerateResu
                              link=f"/library?gen={gen.id}"))
     session.add(UsageLog(user_id=gen.user_id, event="asset_created", credits_delta=0,
                          meta={"generation_id": gen.id, "assets": len(urls)}))
+    await pipeline_svc.advance(session, gen)  # flowboard chains spawn their next step here
     await session.flush()
 
 

@@ -166,6 +166,55 @@ class GenerationDetail(GenerationOut):
     assets: List[AssetOut] = []
 
 
+# ---------------------------------------------------------------- flowboard pipelines
+class PipelineStep(BaseModel):
+    kind: Literal["image", "video"]
+    model_id: str = Field(min_length=2, max_length=60)
+    prompt: str = Field(min_length=1, max_length=4000)
+    negative_prompt: str = Field(default="", max_length=2000)
+    aspect_ratio: str = Field(default="16:9", max_length=12)
+    duration_s: Optional[int] = Field(default=None, ge=1, le=30)
+    camera_move: Optional[str] = None
+    batch_size: int = Field(default=1, ge=1, le=4)
+
+
+class PipelineCreate(BaseModel):
+    name: str = Field(default="", max_length=80)
+    project_id: Optional[str] = None
+    steps: List[PipelineStep] = Field(min_length=1, max_length=5)
+
+
+class PipelineStepOut(BaseModel):
+    index: int
+    kind: str
+    prompt: str
+    model_id: str
+    task: str
+    status: str
+    generation_id: Optional[str] = None
+    error_message: str = ""
+    assets: List[AssetOut] = []
+
+
+class PipelineOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: str
+    name: str
+    project_id: Optional[str] = None
+    status: str
+    error_message: str = ""
+    created_at: dt.datetime
+
+
+class PipelineDetail(PipelineOut):
+    steps: List[PipelineStepOut] = []
+
+
+class PipelineList(BaseModel):
+    items: List[PipelineOut]
+    next: Optional[str] = None
+
+
 # ---------------------------------------------------------------- credits
 class CreditSummary(BaseModel):
     balance: int

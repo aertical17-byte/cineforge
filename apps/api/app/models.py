@@ -303,6 +303,8 @@ class Generation(Base):
     error_code: Mapped[Optional[str]] = mapped_column(String(60), nullable=True)
     error_message: Mapped[str] = mapped_column(String(400), default="")
     idempotency_key: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    pipeline_id: Mapped[Optional[str]] = mapped_column(String(36), ForeignKey("pipelines.id"), nullable=True, index=True)
+    pipeline_step: Mapped[int] = mapped_column(Integer, default=0)  # 0-based index inside the chain
     batch_size: Mapped[int] = mapped_column(Integer, default=1)
     created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), index=True)
     updated_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=now)
@@ -327,6 +329,25 @@ class GenerationJob(Base):
     provider_job_ref: Mapped[Optional[str]] = mapped_column(String(200), nullable=True, index=True)
     log: Mapped[Dict[str, Any]] = mapped_column(JSON, default=dict)
     created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=now)
+
+
+class Pipeline(Base):
+    """A chained creative run (Flowboard): steps execute in order, each fed by the previous asset.
+
+    Only the FIRST step's generation exists at creation time; later steps are spawned by the
+    worker as the chain advances (see services/pipelines.advance). This keeps credit reservation
+    step-local and honest: a chain never promises output it cannot pay for.
+    """
+    __tablename__ = "pipelines"
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
+    user_id: Mapped[str] = mapped_column(String(36), ForeignKey("users.id"), index=True, nullable=False)
+    project_id: Mapped[Optional[str]] = mapped_column(String(36), ForeignKey("projects.id"), nullable=True)
+    name: Mapped[str] = mapped_column(String(80), default="")
+    spec: Mapped[Dict[str, Any]] = mapped_column(JSON, default=dict)  # {"steps": [PipelineStep...]}
+    status: Mapped[str] = mapped_column(String(12), default="running", index=True)  # running|succeeded|failed|canceled
+    error_message: Mapped[str] = mapped_column(String(400), default="")
+    created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), index=True)
     updated_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=now)
 
 

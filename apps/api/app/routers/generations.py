@@ -1,10 +1,10 @@
 """Generations: the main creation surface.
 
 Flow per request:
-1. Validate model + capabilities + plan gate.
+1. Validate model + capabilities + plan gate (shared `services/stepgen`).
 2. Compute deterministic credit estimate (shown to user = deducted amount).
 3. ONE transaction: create Generation + Job, reserve credits, refund on ANY failure.
-4. Worker picks up lease→provider→assetsware; failure → automatic refund.
+4. Worker picks up lease→provider→assets; failure → automatic refund.
 """
 from __future__ import annotations
 
@@ -15,111 +15,46 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.db import session
-from app.models import (AIModel, Asset, Generation, GenerationJob, Plan, Subscription,
-                        User)
+from app.models import Asset, Generation, GenerationJob, User
 from app.schemas import (AssetOut, GenerationCreate, GenerationDetail, GenerationList,
                          GenerationOut)
 from app.services import credits as credit_svc
 from app.services import jobs as job_svc
+from app.services import stepgen
 from app.services.auth import current_user
-from app.services.prompt_engine import credit_cost, registries
-from app.services.registry import caps
 
 router = APIRouter(prefix="/v1/generations", tags=["generations"])
-
-
-def _estimate(model: AIModel, body: GenerationCreate) -> int:
-    return credit_cost(model, body.media_type, body.duration_s or 0, body.batch_size, body.resolution)
-
-
-def _validate(model: AIModel, body: GenerationCreate) -> None:
-    c = caps(model)
-    tasks = model.tasks or []
-    if f"{'image' if body.media_type == 'image' else 'video'}" not in tasks and body.task != "upscale":
-        raise HTTPException(422, f"model {model.id} does not support this media type")
-    if body.aspect_ratio not in (c.get("aspect_ratios") or []):
-        raise HTTPException(422, f"aspect ratio {body.aspect_ratio} unsupported by {model.id}")
-    if body.media_type == "video":
-        maxdur = int(c.get("max_duration_s") or 0)
-        if body.duration_s and maxdur and body.duration_s > maxdur:
-            raise HTTPException(422, f"max duration {maxdur}s for {model.id}")
-    if body.camera_move and body.camera_move not in {r["id"] for r in registries()["camera_moves"]}:
-        raise HTTPException(422, "unknown camera move")
-    if body.camera_move and not c.get("supports_camera_control") and body.task == "img2video":
-        # still allowed: it degrades to prompt text; nothing fake is claimed
-        pass
-    fs = body.film_setup
-    if fs:
-        table = {
-            "genre": "genres", "era": "eras", "tempo": "tempo", "camera_body": "camera_bodies",
-            "lens": "lenses", "aperture": "apertures", "palette": "palettes",
-            "lighting": "lighting_presets", "speed_ramp": "speed_ramps", "moveset_style": "moveset_styles",
-        }
-        for key, group in table.items():
-            v = getattr(fs, key)
-            if v and v not in {r["id"] for r in registries()[group]}:
-                raise HTTPException(422, f"unknown {key} '{v}'")
-
-
-async def _plan_gate(user: User, model: AIModel, s: AsyncSession) -> None:
-    sub = (await s.execute(select(Subscription).where(Subscription.user_id == user.id,
-                                                      Subscription.status.in_(["active", "past_due"])))).scalar_one_or_none()
-    plan = sub.plan_code if sub else "free"
-    order = ["free", "creator", "studio", "enterprise"]
-    if order.index(model.min_plan) > order.index(plan):
-        raise HTTPException(status.HTTP_402_PAYMENT_REQUIRED,
-                            f"{model.id} requires plan '{model.min_plan}'; current plan '{plan}'")
 
 
 @router.post("/preview-cost", status_code=200)
 async def preview_cost(body: GenerationCreate, user: User = Depends(current_user),
                        s: AsyncSession = Depends(session)):
-    model = (await s.execute(select(AIModel).where(AIModel.id == body.model_id, AIModel.is_active.is_(True)))).scalar_one_or_none()
-    if not model:
-        raise HTTPException(404, "model not found")
-    return {"estimated_credits": _estimate(model, body), "model_id": model.id}
+    model = await stepgen.get_active_model(s, body.model_id)
+    return {"estimated_credits": stepgen.estimate(model, body), "model_id": model.id}
 
 
 @router.post("", response_model=GenerationDetail, status_code=201)
 async def create_generation(body: GenerationCreate, user: User = Depends(current_user),
                             s: AsyncSession = Depends(session)):
-    model = (await s.execute(select(AIModel).where(AIModel.id == body.model_id, AIModel.is_active.is_(True)))).scalar_one_or_none()
-    if not model:
-        raise HTTPException(404, "model not found")
     if body.idempotency_key:
         existing = (await s.execute(select(Generation).where(
             Generation.user_id == user.id,
             Generation.idempotency_key == body.idempotency_key))).scalar_one_or_none()
         if existing:
             return await _detail(s, existing, lazy=True)
-    _validate(model, body)
-    await _plan_gate(user, model, s)
-    estimate = _estimate(model, body)
-
-    params = body.model_dump(exclude={"idempotency_key"}, exclude_none=True)
-    params["reference_asset_ids"] = body.reference_asset_ids
-    if body.task == "img2video" and body.reference_asset_ids:
-        params["first_frame_asset_id"] = body.reference_asset_ids[0]
-    gen = Generation(user_id=user.id, project_id=body.project_id, media_type=body.media_type,
-                     task=body.task, model_id=model.id, prompt=body.prompt,
-                     negative_prompt=body.negative_prompt, params=params,
-                     estimated_credits=estimate, batch_size=body.batch_size,
-                     idempotency_key=body.idempotency_key)
     try:
-        s.add(gen)
+        gen = await stepgen.create_from_body(s, user.id, body)
         await s.flush()
-        await credit_svc.reserve_for_generation(
-            s, user.id, gen.id, estimate,
-            f"{body.task} · {model.display_name}",
-        )
         await job_svc.enqueue(s, gen)
-        gen.actual_credits = estimate
         await s.commit()
     except credit_svc.InsufficientCredits as e:
         await s.rollback()
         raise HTTPException(status.HTTP_402_PAYMENT_REQUIRED,
                             {"code": "INSUFFICIENT_CREDITS", "need": e.need, "have": e.have,
                              "message": f"insufficient credits: need {e.need}, have {e.have}"})
+    except HTTPException:
+        await s.rollback()
+        raise
     except Exception:
         await s.rollback()
         raise
