@@ -18,6 +18,7 @@ Single source of truth for milestone state. Update after every meaningful step (
 | 2026-11-11 | Flowboard API (pipelines table, /v1/pipelines, stepgen shared step creation, worker chain advance, chain tests) | ✅ done | gh run 43088503651 |
 | 2026-11-11 | Flowboard UI (/flowboard node-chain builder + sidebar nav) | ✅ done | gh run 43088503651 |
 | 2026-11-11 | E2E chain spec (register→2-node chain→worker advances→2 assets) — all 4 jobs green | ✅ green | apps/e2e/flowboard.spec.ts, gh run 43088503651 |
+| 2026-11-11 | D1.5 template deep-linking (?template= prefills studios, honest model guard) + e2e prefill spec | ✅ green | gh run 43090769392 |
 | Deployment (containers compose; live cloud target) | 🟡 compose ready; cloud account needed | docs/DEPLOYMENT_CHECKLIST.md |
 | Mission Control agent, audio/lipsync execution, Flowboard depth (branch/reorder) | ⬜ backlog | docs/DEVELOPMENT_ROADMAP.md |
 

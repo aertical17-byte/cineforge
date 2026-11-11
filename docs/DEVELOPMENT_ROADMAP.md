@@ -17,6 +17,7 @@
   - Video step consumes the previous step's first asset as its first frame (`img2video`).
   - Web `/flowboard` node-chain builder (kind-filtered engines, per-node prompt/aspect/duration/batch, live per-step status + thumbnails, cancel, `Run chain · N credits`).
   - E2E spec `apps/e2e/flowboard.spec.ts`: register → build 2-node chain → run → both assets render; proves the separate worker process advances the chain.
+- D1.5 template deep-linking: `?template=slug` prefills the studios (prompt/aspect/camera/film; engine only if actually served) + e2e `apps/e2e/template.spec.ts`.
 
 ## D1 — next iteration (product polish)
 
@@ -24,7 +25,7 @@
 2. Gallery preview modal wiring + framer-motion transitions.
 3. Settings taste: notification preferences per kind; danger-zone account deletion flow.
 4. CSP + HSTS at the reverse proxy; session-cookie auth option.
-5. Templates deep-linking into studios (`?template=` prefill) — route param consumer.
+5. ~~Templates deep-linking into studios (`?template=` prefill)~~ ✅ shipped (v0.2): Templates gallery links into studios; Workspace consumes the slug, prefills prompt/aspect/camera/film and selects the template's engine only when this deployment really serves it.
 
 ## D2 — operator & economy
 
