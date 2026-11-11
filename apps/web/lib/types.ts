@@ -80,6 +80,16 @@ export interface GenerationDetail extends Generation {
   assets: Asset[];
 }
 
+export interface Template {
+  id: string;
+  slug: string;
+  name: string;
+  category: string;
+  media_type: string;
+  prompt: string;
+  settings: Record<string, any>;
+}
+
 export interface PipelineStep {
   index: number;
   kind: string;

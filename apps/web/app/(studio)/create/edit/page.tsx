@@ -1,3 +1,5 @@
+import {Suspense} from "react";
+
 import {Workspace} from "@/components/workspace";
 
 export default function CreateEdit() {
@@ -7,7 +9,10 @@ export default function CreateEdit() {
       <p className="mb-6 text-sm text-ink-300">
         Upscale an image or re-shape a region of a video. Engines marked experimental surface their status honestly.
       </p>
-      <Workspace type="edit" />
+      {/* Suspense: useSearchParams inside Workspace requires a boundary for static prerender */}
+      <Suspense fallback={null}>
+        <Workspace type="edit" />
+      </Suspense>
     </div>
   );
 }

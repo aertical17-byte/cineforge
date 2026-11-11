@@ -2,12 +2,13 @@
 
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import Link from "next/link";
+import {useSearchParams} from "next/navigation";
 import {useEffect, useMemo, useState} from "react";
 
 import {assetSrc, jsonApi, rawUpload} from "@/lib/api";
 import {cameraMoves, names} from "@/lib/registries";
 import {useAuthStore} from "@/lib/store";
-import type {AIModel, Asset, GenerationDetail, Project} from "@/lib/types";
+import type {AIModel, Asset, GenerationDetail, Project, Template} from "@/lib/types";
 import {Badge, Button, Card, Field, Input, Skeleton, Tabs} from "@/components/ui";
 
 interface FilmSetup {
@@ -37,6 +38,7 @@ export function Workspace({type}: {type: "image" | "video" | "edit"}) {
   const [activeGen, setActiveGen] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [mode, setMode] = useState<Mode>(type === "video" ? "t2x" : "t2x");
+  const [templateName, setTemplateName] = useState<string | null>(null);
 
   const modelsQ = useQuery({queryKey: ["models"], queryFn: () => jsonApi<AIModel[]>("/v1/models", "GET")});
   const projectsQ = useQuery({
@@ -44,6 +46,32 @@ export function Workspace({type}: {type: "image" | "video" | "edit"}) {
     queryFn: () => jsonApi<Project[]>("/v1/projects", "GET"),
     enabled: !!user,
   });
+
+  // Deep-linked template (?template=slug from the Templates gallery): prefill once,
+  // honestly — only fields the template actually carries, and the model only if this
+  // deployment really serves it for the active task.
+  const params = useSearchParams();
+  const templateSlug = params.get("template");
+  const templatesQ = useQuery({
+    queryKey: ["templates"],
+    queryFn: () => jsonApi<Template[]>("/v1/templates", "GET"),
+    enabled: !!templateSlug,
+  });
+  const [prefilledSlug, setPrefilledSlug] = useState<string | null>(null);
+  useEffect(() => {
+    if (!templateSlug || prefilledSlug === templateSlug || !templatesQ.data || !modelsQ.data) return;
+    const tpl = templatesQ.data.find((t) => t.slug === templateSlug);
+    if (!tpl) return;
+    setPrefilledSlug(templateSlug);
+    setTemplateName(tpl.name);
+    setPrompt(tpl.prompt);
+    const st = tpl.settings || {};
+    if (st.aspect_ratio) setAspect(st.aspect_ratio);
+    if (type === "video" && st.camera_move) setCamera(st.camera_move);
+    if (st.film_setup) setFilm((f) => ({...f, ...st.film_setup}));
+    const wanted = modelsQ.data.find((m) => m.id === st.model_id && m.tasks.includes(activeTask.media_type));
+    if (wanted) setModelId(wanted.id);
+  }, [templateSlug, templatesQ.data, modelsQ.data, prefilledSlug, activeTask.media_type, type]);
   const detailQ = useQuery({
     queryKey: ["generation", activeGen],
     queryFn: () => jsonApi<GenerationDetail>(`/v1/generations/${activeGen}`, "GET"),
@@ -153,6 +181,11 @@ export function Workspace({type}: {type: "image" | "video" | "edit"}) {
       {/* controls column */}
       <div className="space-y-4">
         <Card className="space-y-4 p-4">
+          {templateName && (
+            <div className="flex items-center gap-2 text-xs text-ink-300" data-testid="template-applied">
+              <Badge tone="accent">template</Badge> {templateName}
+            </div>
+          )}
           {taskChoices.length > 1 && (
             <Tabs items={taskChoices.map((t, i) => ({id: String(i), label: t.label}))}
               active={type === "video" && mode === "i2x" ? "1" : "0"}
