@@ -93,7 +93,7 @@ async def create_from_body(s: AsyncSession, user_id: str, body: GenerationCreate
     s.add(gen)
     await s.flush()
     await credit_svc.reserve_for_generation(
-        s, user.id, gen.id, est,
+        s, user_id, gen.id, est,
         f"{body.task} · {model.display_name}",
     )
     gen.actual_credits = est
