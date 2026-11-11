@@ -58,20 +58,6 @@ export function Workspace({type}: {type: "image" | "video" | "edit"}) {
     enabled: !!templateSlug,
   });
   const [prefilledSlug, setPrefilledSlug] = useState<string | null>(null);
-  useEffect(() => {
-    if (!templateSlug || prefilledSlug === templateSlug || !templatesQ.data || !modelsQ.data) return;
-    const tpl = templatesQ.data.find((t) => t.slug === templateSlug);
-    if (!tpl) return;
-    setPrefilledSlug(templateSlug);
-    setTemplateName(tpl.name);
-    setPrompt(tpl.prompt);
-    const st = tpl.settings || {};
-    if (st.aspect_ratio) setAspect(st.aspect_ratio);
-    if (type === "video" && st.camera_move) setCamera(st.camera_move);
-    if (st.film_setup) setFilm((f) => ({...f, ...st.film_setup}));
-    const wanted = modelsQ.data.find((m) => m.id === st.model_id && m.tasks.includes(activeTask.media_type));
-    if (wanted) setModelId(wanted.id);
-  }, [templateSlug, templatesQ.data, modelsQ.data, prefilledSlug, activeTask.media_type, type]);
   const detailQ = useQuery({
     queryKey: ["generation", activeGen],
     queryFn: () => jsonApi<GenerationDetail>(`/v1/generations/${activeGen}`, "GET"),
@@ -95,6 +81,24 @@ export function Workspace({type}: {type: "image" | "video" | "edit"}) {
     ];
   }, [type]);
   const activeTask = taskChoices[type === "video" && mode === "i2x" ? 1 : 0];
+
+  // Deep-linked template (?template=slug from the Templates gallery): prefill once,
+  // honestly — only fields the template actually carries, and the model only if this
+  // deployment really serves it for the active task.
+  useEffect(() => {
+    if (!templateSlug || prefilledSlug === templateSlug || !templatesQ.data || !modelsQ.data) return;
+    const tpl = templatesQ.data.find((t) => t.slug === templateSlug);
+    if (!tpl) return;
+    setPrefilledSlug(templateSlug);
+    setTemplateName(tpl.name);
+    setPrompt(tpl.prompt);
+    const st = tpl.settings || {};
+    if (st.aspect_ratio) setAspect(st.aspect_ratio);
+    if (type === "video" && st.camera_move) setCamera(st.camera_move);
+    if (st.film_setup) setFilm((f) => ({...f, ...st.film_setup}));
+    const wanted = modelsQ.data.find((m) => m.id === st.model_id && m.tasks.includes(activeTask.media_type));
+    if (wanted) setModelId(wanted.id);
+  }, [templateSlug, templatesQ.data, modelsQ.data, prefilledSlug, activeTask.media_type, type]);
 
   const compatible = useMemo(
     () => (modelsQ.data ?? []).filter((m) => m.tasks.includes(activeTask.media_type)),
