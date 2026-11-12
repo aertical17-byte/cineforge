@@ -27,6 +27,7 @@ Single source of truth for milestone state. Update after every meaningful step (
 | 2026-11-12 | Sensitive parts (auth pages incl. forgot-password, admin surface, site sources) moved to a **private companion repository** (linked, same history + archive branch) — public repo keeps only what the open product serves | ✅ done | private repo created & pushed before removals |
 | 2026-11-12 | **No-login mode**: `POST /v1/auth/guest` mints an ephemeral account automatically; studio gates auto-bootstrap; login/register/forgot/admin pages removed from the public product; e2e suite converted to guest flow | ✅ green | gh run 43245431549 (4 jobs) |
 | 2026-11-12 | **No-limits mode**: every account (registered or guest) gets 1,000,000 welcome credits that never expire; no per-generation caps; the only real limit is the AI Horde community queue (documented honestly) | ✅ green | config + tests (insolvency path preserved via direct-lot shrink) |
+| 2026-11-12 | Full English localization (site, README, installer UI + bundled guide + dmg README.txt, release notes) + installer v0.5.0; Gatekeeper guidance updated for macOS Sequoia (right-click→Open no longer bypasses: use "Open Anyway" in Privacy & Security, or `xattr -dr com.apple.quarantine`) | ✅ shipped | dmg workflow v0.5.0 |
 | Mission Control agent, audio/lipsync execution, Flowboard depth (branch/reorder) | ⬜ backlog | docs/DEVELOPMENT_ROADMAP.md |
 
 ## Resume-from-instructions

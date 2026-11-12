@@ -1,104 +1,96 @@
 # 🎬 CineForge AI
 
-**Uno studio di AI per creare immagini e video — nel tuo browser, senza spendere un euro.**
+**An AI studio for creating images and video — in your browser, without spending a cent.**
 
 [![CI](https://github.com/aertical17-byte/cineforge/actions/workflows/ci.yml/badge.svg)](https://github.com/aertical17-byte/cineforge/actions/workflows/ci.yml)
 
-> Include un **motore gratuito** (AI Horde): genera immagini AI con **0 €, senza carta di credito e senza registrazione**. I motori "pro" (video, 4K) sono opzionali e restano disattivati finché non ci metti *tu* una chiave API.
+> Ships with a **free engine** (AI Horde): generate AI images for **$0, no credit card, no signup**. "Pro" engines (video, 4K) are optional and stay disabled until *you* add an API key.
 
 ---
 
-## 🤔 Cos'è, in tre righe?
+## 🤔 What is it, in three lines?
 
-CineForge AI è una web app che ti fa:
+CineForge AI is a web app that lets you:
 
-- 🖼️ **generare immagini** con l'AI (gratis, con il motore community incluso)
-- 🎬 **organizzare progetti** come sul set di un film: preset di camera, look, emozioni
-- 🧩 **collegare i passi** in sequenze (Flowboard) e ritrovare tutto nella libreria
+- 🖼️ **generate images** with AI (free, with the bundled community engine)
+- 🎬 **organize projects** like a film set: camera presets, looks, emotions
+- 🧩 **chain the steps** into sequences (Flowboard) and find everything in the library
 
 ---
 
-## 🚀 Prova sul tuo Mac (il modo facile)
+## 🚀 Try it on your Mac (the easy way)
 
-1. **Scarica l'installer** → [ultime release → file `CineForge-AI.dmg`](https://github.com/aertical17-byte/cineforge/releases/latest)
-2. Apri il file scaricato e **trascina «CineForge AI» in Applicazioni**
-3. Avvia l'app e clicca **«Prepara e avvia CineForge sul mio Mac»** — l'app scarica il codice, avvia i servizi e apre il browser quando è pronto (il primo avvio scarica molto: **5–15 minuti**)
+1. **Download the installer** → [latest release → the `CineForge-AI.dmg` file](https://github.com/aertical17-byte/cineforge/releases/latest)
+2. Open the downloaded file and **drag "CineForge AI" into Applications**
+3. Launch the app and click **"Set up & start CineForge on my Mac"** — the app downloads the code, starts the services and opens your browser when it's ready (the first run downloads a lot: **5–15 minutes**)
 
-> ✅ Requisiti: macOS 13+ e [Docker Desktop](https://www.docker.com/products/docker-desktop/) (gratuito). L'app controlla da sola e ti guida se manca qualcosa.
-> 📖 Guida illustrata passo-passo: **[cineforge-iota.vercel.app/guida.html](https://cineforge-iota.vercel.app/guida.html)**
+> ✅ Requirements: macOS 13+ and [Docker Desktop](https://www.docker.com/products/docker-desktop/) (free). The app checks by itself and guides you if something is missing.
+> 📖 Illustrated step-by-step guide: **[cineforge-iota.vercel.app/guida.html](https://cineforge-iota.vercel.app/guida.html)**
 
 <details>
-<summary>⚠️ Il Mac dice che l'app «non può essere aperta»? (normale, 1 minuto)</summary>
+<summary>⚠️ macOS says the app "cannot be opened"? (normal, 1 minute)</summary>
 
-L'installer è gratuito e senza firma Apple a pagamento, quindi macOS fa una domanda in più:
+The installer is free and carries no paid Apple signature, so macOS asks one extra question. Any of these (once) works:
 
-- **Clic destro** su «CineForge AI» → **Apri** → **Apri**
-- Su macOS recenti: **Impostazioni di sistema → Privacy e sicurezza → «Apri comunque»**
-- Ultima spiaggia (terminale): `xattr -dr com.apple.quarantine "/Applications/CineForge AI.app"`
+- **System Settings → Privacy & Security** → scroll down → **"Open Anyway"** → Open (works on every macOS, including Sequoia and newer)
+- **Terminal** one-liner: `xattr -dr com.apple.quarantine "/Applications/CineForge AI.app"`
+- On macOS 14 or older, **right-click** "CineForge AI" → **Open** → **Open** also works
 </details>
 
 ---
 
-## 💻 Chi non ha un Mac (o preferisce i comandi)
+## 💻 No Mac, or prefer commands
 
-Con [Docker](https://www.docker.com/get-started/) installato:
+With [Docker](https://www.docker.com/get-started/) installed:
 
 ```bash
 git clone https://github.com/aertical17-byte/cineforge.git
 cd cineforge
 docker compose --project-directory . -f infra/docker/docker-compose.yml up -d --build
-# quando è pronto: http://localhost:3000
+# when it's ready: http://localhost:3000
 ```
 
 ---
 
-## 🎥 La tua prima immagine (gratis, davvero)
+## 🎥 Your first image (free, for real)
 
-1. Apri `http://localhost:3000` — **sei già dentro**: sessione ospite automatica, niente registrazione, **crediti illimitati** (1.000.000 di benvenuto, senza scadenza)
-2. Apri uno studio → scegli il motore **«AI Horde · community (free, no key)»**
-3. Scrivi il prompt e genera ⚡
+1. Open `http://localhost:3000` — **you're already in**: automatic guest session, no signup, **unlimited credits** (1,000,000 welcome ones, never expiring)
+2. Open a studio → pick the engine **"AI Horde · community (free, no key)"**
+3. Write the prompt and generate ⚡
 
-Cosa aspettarsi (onestamente):
+What to expect (honestly):
 
 | | |
 |---|---|
-| 💸 Costo | **0 €** — volontari condividono le loro GPU (progetto open: [AI Horde](https://github.com/Haidra-org/AI-Horde)) |
-| 🐢 Velocità | A volte devi aspettare in coda (30–120 s) — per questo costa zero |
-| 🖼️ Qualità | ~512 px, buone per storyboard e bozze |
-| 🎥 Video | Il motore gratuito fa solo immagini; i video richiedono un motore a pagamento opzionale (chiave tua, mai inclusa qui) |
+| 💸 Cost | **$0** — volunteers share their GPUs (open project: [AI Horde](https://github.com/Haidra-org/AI-Horde)) |
+| 🐢 Speed | Sometimes you wait in a queue (30–120 s) — that's why it costs nothing |
+| 🖼️ Quality | ~512 px, good for storyboards and drafts |
+| 🎥 Video | The free engine does images only; video needs an optional paid engine (your own key, never included here) |
 
-**Mai successi finti**: se un motore non è configurato, l'app te lo dice chiaramente (`provider_not_configured`) e ti restituisce i crediti — niente immagini fasulle.
+**Never fake success**: if an engine isn't configured, the app tells you clearly (`provider_not_configured`) and refunds the credits — no fake images.
 
 ---
 
-## 📂 Com'è fatto dentro (per i curiosi)
+## 📂 How it's built (for the curious)
 
-| Pezzo | Cosa fa | Dove |
+| Piece | What it does | Where |
 |---|---|---|
-| 🌐 Web app | Tutto ciò che vedi nel browser | `apps/web` (Next.js) |
-| ⚙️ API | Il "cervello": account, crediti, code | `apps/api` (FastAPI) |
-| 🔁 Worker | Genera davvero le immagini | `apps/api` (loop dedicato) |
-| 🐳 Docker | Avvia tutto con un comando | `infra/docker/` |
+| 🌐 Web app | Everything you see in the browser | `apps/web` (Next.js) |
+| ⚙️ API | The "brain": accounts, credits, queues | `apps/api` (FastAPI) |
+| 🔁 Worker | Actually generates the images | `apps/api` (dedicated loop) |
+| 🐳 Docker | Starts everything with one command | `infra/docker/` |
 
-Tutto il resto della documentazione: **[`docs/`](docs/)** — architettura, sicurezza, specifica API, test.
-
----
-
-## 🛠️ Per sviluppatori
-
-- **CI**: 4 job a ogni push (test API su Postgres+Redis, typecheck+build web, E2E browser, build container) — vedi `.github/workflows/ci.yml`
-- **Prova live senza chiavi**: tab *Actions* → `live-smoke` genera 1 immagine reale via AI Horde con **zero credenziali** e la carica come artefatto
-- **Stato del progetto**: [`PROJECT_STATUS.md`](PROJECT_STATUS.md) · roadmap: [`docs/DEVELOPMENT_ROADMAP.md`](docs/DEVELOPMENT_ROADMAP.md)
-- Test rapidi: `cd apps/api && python -m pytest -q` · `cd apps/web && npm run test`
-
-### Licenza / nota di indipendenza
-
-Progetto originale e indipendente: ispirato solo a funzionalità *osservabili pubblicamente* di altri prodotti AI; nessun asset, testo di marketing o codice di terzi. Vedi `docs/PRODUCT_RESEARCH.md`.
+The rest of the documentation: **[`docs/`](docs/)** — architecture, security, API spec, tests.
 
 ---
 
-<details>
-<summary>🇬🇧 English TL;DR</summary>
+## 🛠️ For developers
 
-CineForge AI is an independent AI creative platform (image generation, cinematography presets, projects, credits, media library). It ships with a **genuinely free, keyless image engine** (AI Horde community) — no credit card, no signup. Mac users: download the `.dmg` from Releases, drag to Applications, click *Start* (needs free Docker Desktop). Everything else: `docker compose up` on any machine. Pro engines (video/4K) stay honestly disabled until you add your own API keys. Full docs in `docs/`.
-</details>
+- **CI**: 4 jobs on every push (API tests on Postgres+Redis, web typecheck+build, browser E2E, container build) — see `.github/workflows/ci.yml`
+- **Live proof without keys**: *Actions* tab → `live-smoke` generates 1 real image via AI Horde with **zero credentials** and uploads it as an artifact
+- **Project status**: [`PROJECT_STATUS.md`](PROJECT_STATUS.md) · roadmap: [`docs/DEVELOPMENT_ROADMAP.md`](docs/DEVELOPMENT_ROADMAP.md)
+- Quick tests: `cd apps/api && python -m pytest -q` · `cd apps/web && npm run test`
+
+### License / independence note
+
+Original and independent project: inspired only by *publicly observable* features of other AI products; no third-party assets, marketing text or code. See `docs/PRODUCT_RESEARCH.md`.
