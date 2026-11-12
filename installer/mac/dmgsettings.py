@@ -14,5 +14,4 @@ icon_locations = {
     "CineForge AI.app": (250, 250),
     "Applications": (640, 250),
     "LEGGIMI.txt": (445, 420),
-    ".background": (0, -1000),
 }
