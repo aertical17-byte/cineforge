@@ -12,8 +12,8 @@ iconutil -c icns installer/mac/assets/icon.iconset -o installer/mac/assets/AppIc
 
 echo "== 2/5 universal binary (x86_64 + arm64)"
 mkdir -p dist
-swiftc -O -arch x86_64 installer/mac/main.swift -o dist/build_x86
-swiftc -O -arch arm64  installer/mac/main.swift -o dist/build_arm
+swiftc -O -target x86_64-apple-macos12.0 installer/mac/main.swift -o dist/build_x86
+swiftc -O -target arm64-apple-macos12.0  installer/mac/main.swift -o dist/build_arm
 lipo -create -output dist/build_universal dist/build_x86 dist/build_arm
 
 echo "== 3/5 app bundle"
