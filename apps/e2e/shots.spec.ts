@@ -4,22 +4,14 @@ import {expect, test} from "@playwright/test";
 // The mock engine is deliberate (no live keys in this environment): tiles labeled
 // as test data on the site. Screenshots land in apps/e2e/shots → CI artifact ui-shots.
 
-const EMAIL = `shots-${Date.now()}@example.com`;
-
 test.use({viewport: {width: 1440, height: 900}, deviceScaleFactor: 2});
 
 test("capture real UI screenshots", async ({page}) => {
   page.on("pageerror", (e) => console.log("PAGEERROR:", e.message));
 
-  // register + project (same flow as journey.spec.ts)
-  await page.goto("/register");
-  await page.getByTestId("reg-name").fill("Site Shots");
-  await page.getByTestId("reg-email").fill(EMAIL);
-  await page.getByTestId("reg-password").fill("Str0ngPassword");
-  await page.getByTestId("reg-consent").check();
-  await page.getByTestId("reg-submit").click();
-  await page.waitForURL("**/dashboard", {timeout: 30_000});
-  await page.waitForSelector("[data-testid=dashboard-title]");
+  // open the studio — no signup: a guest session is minted automatically
+  await page.goto("/dashboard");
+  await page.waitForSelector("[data-testid=dashboard-title]", {timeout: 30_000});
   await page.getByTestId("project-name").fill("Neon Streets — short");
   await page.getByTestId("project-create").click();
 

@@ -11,8 +11,7 @@ export function LandingShell({children}: {children: React.ReactNode}) {
           </Link>
           <nav className="flex items-center gap-3 text-sm">
             <Link href="/settings/subscription" className="hidden text-ink-200 hover:text-ink-100 sm:block">Plans</Link>
-            <Link href="/login" data-testid="nav-login" className="rounded-lg px-3 py-2 text-ink-100 hover:bg-ink-800">Log in</Link>
-            <Link href="/register" className="rounded-xl bg-byz-500 px-4 py-2 font-medium text-white hover:bg-byz-400">Get started</Link>
+            <Link href="/dashboard" data-testid="nav-open" className="rounded-xl bg-byz-500 px-4 py-2 font-medium text-white hover:bg-byz-400">Open studio</Link>
           </nav>
         </div>
       </header>

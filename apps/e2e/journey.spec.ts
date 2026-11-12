@@ -1,27 +1,17 @@
 import {expect, test} from "@playwright/test";
 
-// NOTE: email-validator rejects IANA special-use domains (like .test) at parse time;
-// example.com is the reserved-but-acceptable placeholder the library permits.
-const EMAIL = `e2e-${Date.now()}@example.com`;
-
-test("full creative journey: register → project → generate (mock engine in test env) → library → credits", async ({page}) => {
+test("full creative journey: open studio (auto guest) → project → generate (mock engine in test env) → library → credits", async ({page}) => {
   // Browser-level failures land in CI logs (cheap, high signal).
   page.on("pageerror", (e) => console.log("PAGEERROR:", e.message));
   page.on("console", (m) => {
     if (m.type() === "error") console.log("CONSOLE:", m.text());
   });
 
-  // 1. register
-  await page.goto("/register");
-  await page.getByTestId("reg-name").fill("E2E Director");
-  await page.getByTestId("reg-email").fill(EMAIL);
-  await page.getByTestId("reg-password").fill("Str0ngPassword");
-  await page.getByTestId("reg-consent").check();
-  await page.getByTestId("reg-submit").click();
-  await page.waitForURL("**/dashboard", {timeout: 30_000});
+  // 1. open the studio — no signup: the web app mints a guest session automatically
+  await page.goto("/dashboard");
+  await page.waitForSelector("[data-testid=dashboard-title]", {timeout: 30_000});
 
   // 2. create project
-  await page.waitForSelector("[data-testid=dashboard-title]");
   await page.getByTestId("project-name").fill("E2E Short Film");
   await page.getByTestId("project-create").click();
 

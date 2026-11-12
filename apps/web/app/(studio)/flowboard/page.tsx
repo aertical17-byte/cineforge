@@ -1,7 +1,6 @@
 "use client";
 
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
-import Link from "next/link";
 import {useState} from "react";
 
 import {assetSrc, jsonApi} from "@/lib/api";
@@ -106,7 +105,7 @@ export default function FlowboardPage() {
   if (!user) {
     return (
       <Card className="p-6 text-sm text-ink-200">
-        Sign in to use Flowboard. <Link className="text-byz-300 underline" href="/login">Log in</Link>
+        Preparing your guest session — Flowboard opens automatically in a moment.
       </Card>
     );
   }

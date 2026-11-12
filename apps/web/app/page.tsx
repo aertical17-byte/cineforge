@@ -16,11 +16,11 @@ export default function Landing() {
           </h1>
           <p className="mx-auto mt-6 max-w-xl text-lg text-ink-200">
             CineForge is an AI creative studio: generate cinematic images and video, direct the camera,
-            keep characters consistent, and ship your library — one credit system, one workspace.
+            keep characters consistent, and ship your library — free engines included, no signup, no limits.
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <Link href="/register" data-testid="cta-start" className="rounded-xl bg-byz-500 px-6 py-3.5 text-[15px] font-medium text-white shadow-glow transition hover:bg-byz-400">
-              Start free — 200 credits
+            <Link href="/dashboard" data-testid="cta-start" className="rounded-xl bg-byz-500 px-6 py-3.5 text-[15px] font-medium text-white shadow-glow transition hover:bg-byz-400">
+              Start creating — no signup
             </Link>
             <Link href="/templates" className="rounded-xl border border-ink-600 px-6 py-3.5 text-[15px] text-ink-100 transition hover:border-byz-400">
               Explore templates
@@ -41,7 +41,7 @@ function FeatureGrid() {
     {icon: "🎬", title: "Director's Room", body: "Genre, era, tempo, lens, aperture, palette and 22 camera moves — rendered honestly onto every engine that can honor them."},
     {icon: "🧬", title: "Elements & characters", body: "Train a character once from a photo set, then cast the same person across shots and scenes."},
     {icon: "⚙️", title: "One engine catalog", body: "Image and video engines behind one capability registry: the UI only shows what a model truly supports."},
-    {icon: "🪙", title: "Transparent credits", body: "Every run shows its exact credit cost on the button before you press it. Failures refund automatically."},
+    {icon: "🪙", title: "Transparent credits", body: "Every run shows its exact credit cost on the button before you press it; failures refund automatically. Everyone starts with 1,000,000 credits that never expire — with the free engines that is effectively unlimited."},
     {icon: "🗂", title: "Projects & library", body: "Everything you make lands in a searchable library with settings you can re-roll."},
     {icon: "🔐", title: "Your keys, your data", body: "Self-host friendly: bring provider keys, S3-compatible storage, Postgres. No black-box lock-in."},
   ];

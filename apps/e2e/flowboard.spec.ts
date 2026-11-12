@@ -2,8 +2,7 @@ import {expect, test} from "@playwright/test";
 
 // Flowboard E2E: the whole point is that the WORKER advances the chain in a separate
 // process — API-side unit tests cannot prove that. Mock engines are explicit and
-// deliberate: this deployment has no live provider keys (see journey.spec.ts note).
-const EMAIL = `flow-${Date.now()}@example.com`;
+// deliberate: this deployment has no live provider keys.
 
 test("flowboard chain: image node → video node, worker advances, both assets render", async ({page}) => {
   page.on("pageerror", (e) => console.log("PAGEERROR:", e.message));
@@ -11,14 +10,9 @@ test("flowboard chain: image node → video node, worker advances, both assets r
     if (m.type() === "error") console.log("CONSOLE:", m.text());
   });
 
-  // register
-  await page.goto("/register");
-  await page.getByTestId("reg-name").fill("Flow E2E");
-  await page.getByTestId("reg-email").fill(EMAIL);
-  await page.getByTestId("reg-password").fill("Str0ngPassword");
-  await page.getByTestId("reg-consent").check();
-  await page.getByTestId("reg-submit").click();
-  await page.waitForURL("**/dashboard", {timeout: 30_000});
+  // open the studio — no signup: a guest session is minted automatically
+  await page.goto("/dashboard");
+  await page.waitForSelector("[data-testid=dashboard-title]", {timeout: 30_000});
 
   // open flowboard (sidebar link exists)
   await page.goto("/flowboard");

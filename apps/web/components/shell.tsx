@@ -33,8 +33,6 @@ const NAV = [
 
 export function Sidebar() {
   const path = usePathname();
-  const logout = useAuthStore((s) => s.logout);
-  const user = useAuthStore((s) => s.user);
 
   return (
     <aside className="flex h-screen w-60 shrink-0 flex-col border-r border-ink-700 bg-ink-900" data-testid="sidebar">
@@ -60,10 +58,7 @@ export function Sidebar() {
       </nav>
       <div className="border-t border-ink-700 p-3">
         <Link href="/settings/profile" className="block rounded-lg px-2.5 py-2 text-sm text-ink-200 hover:bg-ink-800">⚙️ Settings</Link>
-        {user?.is_admin && (
-          <Link href="/admin" className="block rounded-lg px-2.5 py-2 text-sm text-ink-200 hover:bg-ink-800">🛡 Admin</Link>
-        )}
-        <button onClick={logout} className="w-full rounded-lg px-2.5 py-2 text-left text-sm text-ink-300 hover:bg-ink-800">↪ Sign out</button>
+        <p className="px-2.5 pt-2 text-[11px] leading-snug text-ink-300">No-login mode: your session lives in this browser only.</p>
       </div>
     </aside>
   );

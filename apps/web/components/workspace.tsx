@@ -172,7 +172,7 @@ export function Workspace({type}: {type: "image" | "video" | "edit"}) {
   if (!user) {
     return (
       <Card className="p-6 text-sm text-ink-200">
-        Sign in to create. <Link className="text-byz-300 underline" href="/login">Log in</Link>
+        Preparing your guest session — the studio opens automatically in a moment.
       </Card>
     );
   }
