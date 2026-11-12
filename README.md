@@ -54,7 +54,7 @@ docker compose --project-directory . -f infra/docker/docker-compose.yml up -d --
 
 ## 🎥 La tua prima immagine (gratis, davvero)
 
-1. Su `http://localhost:3000` **registrati** → arrivi con **200 crediti gratis**
+1. Apri `http://localhost:3000` — **sei già dentro**: sessione ospite automatica, niente registrazione, **crediti illimitati** (1.000.000 di benvenuto, senza scadenza)
 2. Apri uno studio → scegli il motore **«AI Horde · community (free, no key)»**
 3. Scrivi il prompt e genera ⚡
 

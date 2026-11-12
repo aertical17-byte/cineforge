@@ -46,8 +46,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release delete v0.3.0 --yes --cleanup-tag 2>/dev/null || true
-          gh release create v0.3.0 dist/CineForge-AI.dmg \
-            --title "CineForge AI v0.3.0 — installer Mac" \
+          gh release delete v0.4.0 --yes --cleanup-tag 2>/dev/null || true
+          gh release create v0.4.0 dist/CineForge-AI.dmg \
+            --title "CineForge AI v0.4.0 — installer Mac" \
             --latest \
-            --notes "Scarica **CineForge-AI.dmg**, trascina «CineForge AI» in Applicazioni, apri e clicca «Prepara e avvia». Serve [Docker Desktop](https://www.docker.com/products/docker-desktop/) (gratuito) — l'app ti guida. Primo avvio: 5–15 minuti. Motore immagini **gratuito incluso** (AI Horde, 0 €, senza carta). Guida: nel progetto (docs) e dentro l'app. Se il Mac dice che l'app non può essere aperta: clic destro → Apri → Apri."
+            --notes "Scarica **CineForge-AI.dmg**, trascina «CineForge AI» in Applicazioni, apri e clicca «Prepara e avvia». Serve [Docker Desktop](https://www.docker.com/products/docker-desktop/) (gratuito) — l'app ti guida. Primo avvio: 5–15 minuti. **Niente registrazione**: apri localhost:3000 e generi subito, con **crediti illimitati** (1.000.000 senza scadenza) e il motore immagini **gratuito incluso** (AI Horde, 0 €, senza carta). Guida: nel progetto (docs) e dentro l'app. Se il Mac dice che l'app non può essere aperta: clic destro → Apri → Apri."

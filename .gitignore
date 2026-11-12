@@ -17,3 +17,5 @@ apps/api/.pytest_cache
 playwright-report/
 test-results/
 site/downloads/*.dmg
+*.tsbuildinfo
+apps/web/.venv-tmp
