@@ -25,8 +25,9 @@ BASE = "https://aihorde.net/api/v2"
 ANON_KEY = "0000000000"
 
 # anonymous tier refuses >~580px on the long side; we stay at 512 to be safe.
+# The horde validates that width/height are multiples of 64 (learned live in the smoke run).
 ASPECT_WH = {
-    "1:1": (512, 512), "16:9": (512, 288), "9:16": (288, 512),
+    "1:1": (512, 512), "16:9": (448, 256), "9:16": (256, 448),
     "4:3": (512, 384), "3:4": (384, 512),
 }
 
@@ -45,7 +46,7 @@ def horde_payload(req: ImageRequest) -> Dict[str, Any]:
     params: Dict[str, Any] = {"width": width, "height": height, "n": 1,
                               "steps": min(int(req.steps or 25), 50)}
     if req.seed is not None:
-        params["seed"] = int(req.seed) % 2**32
+        params["seed"] = str(int(req.seed) % 2**32)  # horde schema: seed is a string
     if req.guidance:
         params["cfg_scale"] = float(req.guidance)
     return {"prompt": prompt, "params": params, "nsfw": False, "r2": True}

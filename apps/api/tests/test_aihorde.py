@@ -10,7 +10,7 @@ def test_horde_payload_builder_pure():
     from app.providers.aihorde import horde_payload, horde_size
     from app.providers.base import ImageRequest
 
-    assert horde_size("16:9") == (512, 288)
+    assert horde_size("16:9") == (448, 256)  # multiple of 64: the horde validates this live
     assert horde_size("nonsense") == (512, 512)  # safe default
 
     req = ImageRequest(prompt="a rainy neon alley", negative_prompt="blurry",
@@ -18,7 +18,7 @@ def test_horde_payload_builder_pure():
     payload = horde_payload(req)
     assert payload["params"]["width"] == 384 and payload["params"]["height"] == 512
     assert payload["params"]["steps"] == 50, "anonymous tier steps are capped at 50"
-    assert payload["params"]["seed"] == 99
+    assert payload["params"]["seed"] == "99", "horde schema wants seed as a string"
     assert payload["params"]["cfg_scale"] == 7.0
     assert payload["prompt"] == "a rainy neon alley ### blurry", "negative rides the documented separator"
     assert payload["nsfw"] is False

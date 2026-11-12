@@ -52,8 +52,9 @@ def main():
     # anonymous concurrency/limits are enforced at submit time.
     try:
         r = httpx.get(f"{HORDE_BASE}/status/heartbeat", timeout=30)
-        results["aihorde"] = {"reachable": r.status_code == 200 and "heartbeat" in r.json(),
-                              "status": r.status_code}
+        body = r.json() if r.status_code == 200 else {}
+        results["aihorde"] = {"reachable": r.status_code == 200 and bool(body.get("message")),
+                              "status": r.status_code, "version": body.get("version")}
     except Exception as e:  # noqa: BLE001
         results["aihorde"] = {"reachable": False, "error": str(e)}
 
