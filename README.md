@@ -25,7 +25,7 @@ CineForge AI è una web app che ti fa:
 3. Avvia l'app e clicca **«Prepara e avvia CineForge sul mio Mac»** — l'app scarica il codice, avvia i servizi e apre il browser quando è pronto (il primo avvio scarica molto: **5–15 minuti**)
 
 > ✅ Requisiti: macOS 13+ e [Docker Desktop](https://www.docker.com/products/docker-desktop/) (gratuito). L'app controlla da sola e ti guida se manca qualcosa.
-> 📖 Guida illustrata passo-passo: **[SITO-GUIDA-PLACEHOLDER](site/guida.html)** *(aggiornato dopo la pubblicazione del sito)*
+> 📖 Guida illustrata passo-passo: **[cineforge-iota.vercel.app/guida.html](https://cineforge-iota.vercel.app/guida.html)**
 
 <details>
 <summary>⚠️ Il Mac dice che l'app «non può essere aperta»? (normale, 1 minuto)</summary>
