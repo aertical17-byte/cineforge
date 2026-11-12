@@ -19,6 +19,7 @@ Single source of truth for milestone state. Update after every meaningful step (
 | 2026-11-11 | Flowboard UI (/flowboard node-chain builder + sidebar nav) | ✅ done | gh run 43088503651 |
 | 2026-11-11 | E2E chain spec (register→2-node chain→worker advances→2 assets) — all 4 jobs green | ✅ green | apps/e2e/flowboard.spec.ts, gh run 43088503651 |
 | 2026-11-11 | D1.5 template deep-linking (?template= prefills studios, honest model guard) + e2e prefill spec | ✅ green | gh run 43090769392 |
+| 2026-11-12 | Budget-0 real generation: AI Horde keyless provider (anonymous tier), seed model horde-sdxl, live-smoke workflow proves one REAL image (21822 bytes, job 37658ec2) with zero credentials | ✅ green | gh runs 43226687177 (smoke) + 43226656918 (ci) |
 | Deployment (containers compose; live cloud target) | 🟡 compose ready; cloud account needed | docs/DEPLOYMENT_CHECKLIST.md |
 | Mission Control agent, audio/lipsync execution, Flowboard depth (branch/reorder) | ⬜ backlog | docs/DEVELOPMENT_ROADMAP.md |
 
@@ -47,3 +48,6 @@ If interrupted: (1) read the last ✅ row above; (2) check `gh run list` for the
 12. Alembic 0001 is `metadata.create_all`: a fresh DB already contains any new model, so delta migrations (0002+) must guard every op with an inspector check (`table in get_table_names()`, column/index presence) or fresh-DB runs fail with "already exists".
 13. The pytest SQLite DB is shared across ALL test files in a session: a test that intentionally leaves `queued` jobs behind (the 402-insolvency spec) consumes `process_pending(batch=N)` iterations of later tests — drain-until (poll the entity, process in rounds) instead of a single fixed batch.
 14. The `ruff --select E9,F821` gate catches refactor debris immediately (renamed parameter still referenced as `user.id`): fix before pushing, it fails before tests even start.
+15. AI Horde input validation (learned live): width/height must be multiples of 64 and `seed` must be a string. The live-smoke's honest gate (fail unless a real image lands) surfaced both on the first real attempt.
+16. A smoke step that just exits 0 can mask a failed generation — the first live-smoke "succeeded" without producing an image (un-awaited coroutine). Verify artifacts explicitly: parse the verify JSON and assert `ok` + `bytes > 1000` in the workflow itself.
+17. `python scripts/x.py` puts `scripts/` first on `sys.path`, not cwd: scripts importing the `app` package must insert `os.getcwd()` before the import.

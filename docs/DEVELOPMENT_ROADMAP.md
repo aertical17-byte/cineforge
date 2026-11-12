@@ -18,6 +18,7 @@
   - Web `/flowboard` node-chain builder (kind-filtered engines, per-node prompt/aspect/duration/batch, live per-step status + thumbnails, cancel, `Run chain · N credits`).
   - E2E spec `apps/e2e/flowboard.spec.ts`: register → build 2-node chain → run → both assets render; proves the separate worker process advances the chain.
 - D1.5 template deep-linking: `?template=slug` prefills the studios (prompt/aspect/camera/film; engine only if actually served) + e2e `apps/e2e/template.spec.ts`.
+- Budget-0 generation path: AI Horde keyless provider (`horde-sdxl`, anonymous tier — no signup, no card) enabled by default in compose; live-smoke workflow (manual dispatch) generates one real image with zero credentials and uploads it as an artifact.
 
 ## D1 — next iteration (product polish)
 
