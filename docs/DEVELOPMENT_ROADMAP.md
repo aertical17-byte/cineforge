@@ -8,6 +8,15 @@
 - Web (all routes listed in docs/UI_UX_SPECIFICATION.md; design system; typed API client; live credits badge).
 - CI: api (PG+Redis), web, e2e full journey, docker builds. Docker Compose deployment artifacts.
 
+## Shipped in this milestone (v0.3 / v0.4 — public launch, no-login, no-limits)
+
+- Public launch: repo made public; beginner-first Italian README (dmg path, free-engine expectations, honest limits).
+- Real-UI proof: `apps/e2e/shots.spec.ts` captures 6 real screenshots (1440p@2x) into the `ui-shots` artifact; the marketing site shows them labeled "screenshot reale" (mock-engine tiles disclosed).
+- Mac installer with UI: native AppKit launcher (Italian; Docker/git checks, auto-start Docker, folder pick, clone, `docker compose up -d --build`, health polling, opens browser, bundled offline guide) + drag-to-Applications dmg via dmgbuild (universal x86_64+arm64, ad-hoc signed); release published from CI (`v0.3.0` → refreshed as `v0.4.0`).
+- Landing site on Vercel: pure static (no framework), hero/steps/real-screenshots/free-engine proof/FAQ, guide page, dmg mirror served from the site. Deployed via Vercel MCP file upload (sha/size refs).
+- **No-login mode**: included engines need no credentials, so the product needs no signup — `POST /v1/auth/guest` mints an ephemeral account (no email collected, `@example.com` placeholder), the studio auto-bootstraps it, auth/admin/forgot pages removed from the public product (sources preserved in a private companion repository, same history + archive branch). E2E suite runs the guest flow.
+- **No-limits mode**: 1,000,000 welcome credits for everyone (guest included), never expiring; no per-generation rate caps (auth attempt limiting stays as anti-abuse); honest framing: the only real cap is the AI Horde community queue. Credit ledger stays intact (cost display, refunds, insolvency guard) for the optional paid engines.
+
 ## Shipped in this milestone (v0.2)
 
 - Deployment hardening: compose validation gate in CI (`docker compose config -q`), one-command `infra/deploy.sh`, checklist pointer.
