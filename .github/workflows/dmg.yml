@@ -24,6 +24,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Install build deps (Pillow for assets, dmgbuild for the image)
+        run: python3 -m pip install --quiet pillow dmgbuild
       - name: Build app bundle + dmg
         run: bash installer/mac/build.sh
       - name: Sanity-check the dmg (mount, app present, binary runs --help path check)

@@ -28,7 +28,6 @@ printf 'APPL????' > "$APP/Contents/PkgInfo"
 codesign --force --deep --sign - "$APP"   # ad-hoc: honest, no paid Apple certificate
 
 echo "== 4/5 dmg (dmgbuild: background + icon positions, no Finder scripting)"
-python3 -m pip install --quiet dmgbuild
 dmgbuild -s installer/mac/dmgsettings.py "CineForge AI" "dist/CineForge-AI.dmg"
 
 echo "== 5/5 done"
