@@ -16,3 +16,4 @@ apps/api/htmlcov
 apps/api/.pytest_cache
 playwright-report/
 test-results/
+site/downloads/*.dmg

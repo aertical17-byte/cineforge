@@ -1,19 +1,21 @@
-"""CineForge AI launcher — native macOS app (AppKit, no dependencies, no storyboards).
+/**
+ CineForge AI launcher — native macOS app (AppKit, no dependencies, no storyboards).
 
-What it does (in Italian UI for non-technical users):
-1. Checks Docker + git and says so honestly.
-2. «Prepara e avvia» → asks for a folder, clones the public repo, runs docker compose,
-   waits for http://localhost:3000, then opens the browser. First boot builds images
-   (5–15 min) — the log area shows live progress so the user is never lost.
-3. «Apri l'app», «Ferma i servizi», bundled offline guide, GitHub link.
+ What it does (Italian UI for non-technical users):
+ 1. Checks Docker + git and says so honestly.
+ 2. "Prepara e avvia" → asks for a folder, clones the public repo, runs docker compose,
+    waits for http://localhost:3000, then opens the browser. First boot builds images
+    (5-15 min) — the log area shows live progress so the user is never lost.
+ 3. "Apri l'app", "Ferma i servizi", bundled offline guide, GitHub link.
 
-Honesty rules (project principle): never fake success. If Docker is missing we say it;
-if compose fails we show the log; if the wait times out we say the containers may still
-be building instead of pretending the app is ready.
-"""
+ Honesty rules (project principle): never fake success. If Docker is missing we say it;
+ if compose fails we show the log; if the wait times out we say the containers may still
+ be building instead of pretending the app is ready.
+ */
 import AppKit
 
 let REPO_URL = "https://github.com/aertical17-byte/cineforge"
+let REPO_LINK = URL(string: REPO_URL)!
 let WEB_URL = URL(string: "http://127.0.0.1:3000/")!
 let DOCKER_SITE = URL(string: "https://www.docker.com/products/docker-desktop/")!
 let COMPOSE_CMD = "docker compose -f infra/docker/docker-compose.yml --project-directory . "
@@ -231,8 +233,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         let spinnerRow = NSStackView(views: [progress, stateLabel])
         spinnerRow.spacing = 8
+        spinnerRow.alignment = .centerY
 
-        [icon, title, sub, dockerLabel, gitLabel, stateLabel, primaryButton,
+        [icon, title, sub, dockerLabel, gitLabel, spinnerRow, primaryButton,
          row1, row2, logTitle, scroll].forEach { stack.addArrangedSubview($0) }
 
         let content = NSVisualEffectView(frame: NSRect(x: 0, y: 0, width: 720, height: 660))
@@ -290,7 +293,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                     ? "✅ Docker: installato e in esecuzione"
                     : (FileManager.default.fileExists(atPath: "/Applications/Docker.app")
                        ? "⚠️ Docker: installato ma non avviato (l'app lo avvierà per te)"
-                       : "❌ Docker: non installato — serve [Docker Desktop](https://www.docker.com/products/docker-desktop/), gratuito")
+                       : "❌ Docker: non installato — serve Docker Desktop (gratuito). Premi Avvia e ti porto al download.")
                 self.gitLabel.stringValue = gitOk ? "✅ Git: presente (di serie su macOS)" : "❌ Git: non trovato — installa gli Strumenti sviluppatore"
                 self.primaryButton.isEnabled = gitOk  // docker may be bootstrapped by us
             }
@@ -409,12 +412,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if let url = Bundle.main.url(forResource: "guida", withExtension: "html") {
             NSWorkspace.shared.open(url)
         } else {
-            NSWorkspace.shared.open(REPO_URL)
+            NSWorkspace.shared.open(REPO_LINK)
         }
     }
 
     @objc func githubClicked() {
-        NSWorkspace.shared.open(REPO_URL)
+        NSWorkspace.shared.open(REPO_LINK)
     }
 }
 
