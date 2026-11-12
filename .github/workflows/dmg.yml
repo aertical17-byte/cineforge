@@ -33,7 +33,7 @@ jobs:
           hdiutil attach dist/CineForge-AI.dmg -nobrowse -readonly -mountpoint /tmp/cfvol
           test -d "/tmp/cfvol/CineForge AI.app"
           test -x "/tmp/cfvol/CineForge AI.app/Contents/MacOS/CineForgeAI"
-          test -f "/tmp/cfvol/LEGGIMI.txt"
+          test -f "/tmp/cfvol/README.txt"
           hdiutil detach /tmp/cfvol
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -46,8 +46,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release delete v0.4.0 --yes --cleanup-tag 2>/dev/null || true
-          gh release create v0.4.0 dist/CineForge-AI.dmg \
-            --title "CineForge AI v0.4.0 — installer Mac" \
+          gh release delete v0.5.0 --yes --cleanup-tag 2>/dev/null || true
+          gh release create v0.5.0 dist/CineForge-AI.dmg \
+            --title "CineForge AI v0.5.0 — Mac installer" \
             --latest \
-            --notes "Scarica **CineForge-AI.dmg**, trascina «CineForge AI» in Applicazioni, apri e clicca «Prepara e avvia». Serve [Docker Desktop](https://www.docker.com/products/docker-desktop/) (gratuito) — l'app ti guida. Primo avvio: 5–15 minuti. **Niente registrazione**: apri localhost:3000 e generi subito, con **crediti illimitati** (1.000.000 senza scadenza) e il motore immagini **gratuito incluso** (AI Horde, 0 €, senza carta). Guida: nel progetto (docs) e dentro l'app. Se il Mac dice che l'app non può essere aperta: clic destro → Apri → Apri."
+            --notes "Download **CineForge-AI.dmg**, drag “CineForge AI” into Applications, open it and click **Set up & start**. Requires [Docker Desktop](https://www.docker.com/products/docker-desktop/) (free) — the app guides you. First run: 5–15 minutes. **No signup**: open localhost:3000 and start creating right away, with **unlimited credits** (1,000,000, never expiring) and the **free image engine included** (AI Horde, \$0, no card). If macOS says the app cannot be opened: System Settings → Privacy & Security → **Open Anyway** (or in Terminal: \`xattr -dr com.apple.quarantine \"/Applications/CineForge AI.app\"\`). Guide: in the project (docs) and inside the app."

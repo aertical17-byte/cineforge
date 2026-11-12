@@ -1,12 +1,12 @@
 /**
  CineForge AI launcher — native macOS app (AppKit, no dependencies, no storyboards).
 
- What it does (Italian UI for non-technical users):
+ What it does (beginner-friendly English UI):
  1. Checks Docker + git and says so honestly.
- 2. "Prepara e avvia" → asks for a folder, clones the public repo, runs docker compose,
+ 2. "Set up & start" → asks for a folder, clones the public repo, runs docker compose,
     waits for http://localhost:3000, then opens the browser. First boot builds images
     (5-15 min) — the log area shows live progress so the user is never lost.
- 3. "Apri l'app", "Ferma i servizi", bundled offline guide, GitHub link.
+ 3. "Open the app", "Stop services", bundled offline guide, GitHub link.
 
  Honesty rules (project principle): never fake success. If Docker is missing we say it;
  if compose fails we show the log; if the wait times out we say the containers may still
@@ -104,8 +104,8 @@ enum PickFolder {
             panel.canChooseFiles = false
             panel.canChooseDirectories = true
             panel.allowsMultipleSelection = false
-            panel.prompt = "Scegli cartella"
-            panel.message = "Dove vuoi installare CineForge AI? Verrà creata una sottocartella «cineforge»."
+            panel.prompt = "Choose Folder"
+            panel.message = "Where should CineForge AI be installed? A “cineforge” subfolder will be created."
             let code = panel.runModal()
             PickFolder.chosen = (code == .OK) ? panel.url : nil
             sem.signal()
@@ -186,19 +186,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         icon.heightAnchor.constraint(equalToConstant: 76).isActive = true
 
         let title = label("CineForge AI", size: 27, weight: .bold, center: true)
-        let sub = label("Genera immagini e video con l'AI — il motore community è gratis, senza carta di credito.\nQuesta app avvia tutto sul tuo Mac, in locale.", size: 13,
+        let sub = label("Generate images and video with AI — the community engine is free, no credit card needed.\nThis app starts everything on your Mac, locally.", size: 13,
                         color: .secondaryLabelColor, center: true)
 
-        dockerLabel = label("Docker: controllo…")
-        gitLabel = label("Git: controllo…")
-        stateLabel = label("Pronto. Clicca il pulsante qui sotto per iniziare.", size: 14, weight: .medium)
+        dockerLabel = label("Docker: checking…")
+        gitLabel = label("Git: checking…")
+        stateLabel = label("Ready. Click the button below to begin.", size: 14, weight: .medium)
         stateLabel.alignment = .center
 
-        primaryButton = button("🚀  Prepara e avvia CineForge sul mio Mac", #selector(startClicked), large: true)
-        openAppButton = button("🌐  Apri l'app nel browser", #selector(openAppClicked))
-        stopButton = button("⛔  Ferma i servizi", #selector(stopClicked))
-        let guideButton = button("📖  Guida passo-passo", #selector(guideClicked))
-        let ghButton = button("⭐  Progetto su GitHub", #selector(githubClicked))
+        primaryButton = button("🚀  Set up & start CineForge on my Mac", #selector(startClicked), large: true)
+        openAppButton = button("🌐  Open the app in your browser", #selector(openAppClicked))
+        stopButton = button("⛔  Stop services", #selector(stopClicked))
+        let guideButton = button("📖  Step-by-step guide", #selector(guideClicked))
+        let ghButton = button("⭐  Project on GitHub", #selector(githubClicked))
 
         let row1 = NSStackView(views: [openAppButton, stopButton])
         let row2 = NSStackView(views: [guideButton, ghButton])
@@ -229,7 +229,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         scroll.widthAnchor.constraint(equalTo: stack.widthAnchor, constant: -18).isActive = true
         Log.view = tv
 
-        let logTitle = label("Dettagli dell'avvio", size: 11, color: .tertiaryLabelColor)
+        let logTitle = label("Startup details", size: 11, color: .tertiaryLabelColor)
 
         let spinnerRow = NSStackView(views: [progress, stateLabel])
         spinnerRow.spacing = 8
@@ -259,7 +259,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let appItem = NSMenuItem()
         main.addItem(appItem)
         let appMenu = NSMenu()
-        appMenu.addItem(NSMenuItem(title: "Esci da CineForge AI",
+        appMenu.addItem(NSMenuItem(title: "Quit CineForge AI",
                                    action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
         appItem.submenu = appMenu
         NSApplication.shared.mainMenu = main
@@ -290,16 +290,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             let gitOk = Shell.quick("command -v git >/dev/null") == 0
             DispatchQueue.main.async {
                 self.dockerLabel.stringValue = dockerOk
-                    ? "✅ Docker: installato e in esecuzione"
+                    ? "✅ Docker: installed and running"
                     : (FileManager.default.fileExists(atPath: "/Applications/Docker.app")
-                       ? "⚠️ Docker: installato ma non avviato (l'app lo avvierà per te)"
-                       : "❌ Docker: non installato — serve Docker Desktop (gratuito). Premi Avvia e ti porto al download.")
-                self.gitLabel.stringValue = gitOk ? "✅ Git: presente (di serie su macOS)" : "❌ Git: non trovato — installa gli Strumenti sviluppatore"
+                       ? "⚠️ Docker: installed but not running (this app will start it for you)"
+                       : "❌ Docker: not installed — you need Docker Desktop (free). Press Start and I'll take you to the download.")
+                self.gitLabel.stringValue = gitOk ? "✅ Git: present (built into macOS)" : "❌ Git: not found — install the Xcode Command Line Tools"
                 self.primaryButton.isEnabled = gitOk  // docker may be bootstrapped by us
             }
             let up = Health.isUp()
             DispatchQueue.main.async { self.openAppButton.isEnabled = up }
-            if up { Log.append("ℹ️ Servizi già attivi su localhost:3000 — puoi aprire l'app.") }
+            if up { Log.append("ℹ️ Services already running on localhost:3000 — you can open the app.") }
         }
     }
 
@@ -307,75 +307,75 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc func startClicked() {
         setBusy(true)
-        setState("Controllo Docker…", spinner: true)
+        setState("Checking Docker…", spinner: true)
         queue.async {
             if Shell.quick("command -v docker >/dev/null && docker info >/dev/null 2>&1") == 0 {
-                Log.append("✅ Docker è pronto.")
+                Log.append("✅ Docker is ready.")
                 self.pickFolderAndInstall()
                 return
             }
             if FileManager.default.fileExists(atPath: "/Applications/Docker.app") {
-                Log.append("🐳 Docker non risponde: avvio Docker Desktop e attende la macchina…")
+                Log.append("🐳 Docker not responding: starting Docker Desktop and waiting for the engine…")
                 DispatchQueue.main.async { NSWorkspace.shared.open(URL(fileURLWithPath: "/Applications/Docker.app")) }
                 for _ in 0..<50 {  // up to ~150 s
                     if Shell.quick("docker info >/dev/null 2>&1") == 0 {
-                        Log.append("✅ Docker è pronto.")
+                        Log.append("✅ Docker is ready.")
                         self.pickFolderAndInstall()
                         return
                     }
                     Thread.sleep(forTimeInterval: 3)
                 }
-                Log.append("❌ Docker non si è avviato in tempo.")
-                self.setState("❌ Apri Docker Desktop manualmente (barra dei menu) e riprova.")
+                Log.append("❌ Docker didn't start in time.")
+                self.setState("❌ Open Docker Desktop manually (menu bar) and try again.")
                 self.setBusy(false)
                 return
             }
-            Log.append("❌ Docker Desktop non è installato. Apro la pagina di download (gratuito)…")
+            Log.append("❌ Docker Desktop is not installed. Opening the download page (free)…")
             DispatchQueue.main.async { NSWorkspace.shared.open(DOCKER_SITE) }
-            self.setState("❌ Serve Docker Desktop: scaricalo, installalo, poi riprova.")
+            self.setState("❌ Docker Desktop is required: download it, install it, then try again.")
             self.setBusy(false)
         }
     }
 
     func pickFolderAndInstall() {
         guard let folder = PickFolder.ask() else {
-            setState("Installazione annullata.")
+            setState("Installation canceled.")
             setBusy(false)
             return
         }
         let dir = folder.appendingPathComponent("cineforge", isDirectory: true)
         installDir = dir
-        setState("Scarico il codice del progetto…", spinner: true)
+        setState("Downloading the project code…", spinner: true)
         if FileManager.default.fileExists(atPath: dir.path) {
-            Log.append("📂 Cartella «cineforge» già presente in \(dir.deletingLastPathComponent().path) — la riutilizzo (aggiornamento: esegui di nuovo «Ferma» + «Prepara e avvia»).")
+            Log.append("📂 A “cineforge” folder already exists in \(dir.deletingLastPathComponent().path) — reusing it (to update: run “Stop” + “Set up & start” again).")
             startCompose(dir: dir)
         } else {
             Shell.run("git clone --depth 1 \(REPO_URL) \"\(dir.path)\"") { code in
                 if code != 0 {
-                    self.setState("❌ Download fallito — controlla la connessione e riprova (dettagli sotto).")
+                    self.setState("❌ Download failed — check your connection and try again (details below).")
                     self.setBusy(false)
                     return
                 }
-                Log.append("✅ Codice scaricato.")
+                Log.append("✅ Code downloaded.")
                 self.startCompose(dir: dir)
             }
         }
     }
 
     func startCompose(dir: URL) {
-        setState("Costruisco e avvio i servizi (il primo avvio scarica molto: 5–15 minuti)…", spinner: true)
+        setState("Building & starting services (the first run downloads a lot: 5–15 minutes)…", spinner: true)
         Shell.run(COMPOSE_CMD + "up -d --build", cwd: dir) { code in
             if code != 0 {
-                self.setState("❌ L'avvio è fallito — vedi i dettagli qui sotto (di solito è Docker fermo o memoria piena).")
+                self.setState("❌ Startup failed — see the details below (usually Docker stopped or low memory).")
                 self.setBusy(false)
                 return
             }
-            Log.append("⏳ Servizi avviati: attendo che l'app risponda…")
-            self.setState("⏳ Attendo che l'app risponda (le immagini si costruiscono: fino a ~15 minuti)…", spinner: true)
+            Log.append("⏳ Services started: waiting for the app to respond…")
+            self.setState("⏳ Waiting for the app to respond (images are being built: up to ~15 minutes)…", spinner: true)
             for _ in 0..<200 {  // up to 20 min of polling
                 if Health.isUp() {
-                    Log.append("✅ Pronto! Apro il browser…")
-                    self.setState("✅ Tutto avviato! Sto aprendo http://localhost:3000 nel browser.")
+                    Log.append("✅ Ready! Opening the browser…")
+                    self.setState("✅ Everything is up! Opening http://localhost:3000 in your browser.")
                     DispatchQueue.main.async {
                         NSWorkspace.shared.open(WEB_URL)
                         self.openAppButton.isEnabled = true
@@ -385,8 +385,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 }
                 Thread.sleep(forTimeInterval: 6)
             }
-            Log.append("⏱️ Non ancora risposto in 20 minuti: la costruzione può continuare in background.")
-            self.setState("⏱️ Ancora in costruzione: riprova «Apri l'app nel browser» tra qualche minuto (i dettagli sotto mostrano i progressi).")
+            Log.append("⏱️ Still no response after 20 minutes: the build may continue in the background.")
+            self.setState("⏱️ Still building: try “Open the app in your browser” again in a few minutes (details below show progress).")
             self.setBusy(false)
         }
     }
@@ -397,12 +397,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc func stopClicked() {
         guard let dir = installDir, FileManager.default.fileExists(atPath: dir.path) else {
-            Log.append("ℹ️ Nessuna installazione registrata: niente da fermare.")
+            Log.append("ℹ️ No installation registered: nothing to stop.")
             return
         }
-        setState("Fermo i servizi…", spinner: true)
+        setState("Stopping services…", spinner: true)
         Shell.run(COMPOSE_CMD + "down", cwd: dir) { _ in
-            self.setState("⛔ Servizi fermati. Per riavviarli: «Prepara e avvia» (sarà rapido).")
+            self.setState("⛔ Services stopped. To restart: “Set up & start” (it will be quick).")
             self.setBusy(false)
             DispatchQueue.main.async { self.openAppButton.isEnabled = false }
         }
