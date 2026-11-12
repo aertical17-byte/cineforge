@@ -10,8 +10,8 @@ export default function ForgotPassword() {
         <p className="mt-2 text-sm text-ink-300">
           Enter your account email and we&apos;ll send a reset link once email delivery is configured by the operator.
         </p>
-        <a href="mailto:studio@cineforge.test" className="mt-6 block text-sm text-byz-300 underline">
-          studio@cineforge.test
+        <a href="mailto:platform@cineforgeai.useinbox.email" className="mt-6 block text-sm text-byz-300 underline">
+          platform@cineforgeai.useinbox.email
         </a>
         <Link href="/login" className="mt-6 block text-sm text-ink-300 underline">Back to login</Link>
       </div>
