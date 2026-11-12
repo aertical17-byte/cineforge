@@ -1,0 +1,51 @@
+name: dmg
+
+# Manual, on-demand: builds the macOS installer (launcher app + drag-to-Applications dmg)
+# and optionally publishes it to GitHub Releases (public download for end users).
+# macOS runners are billed for private repos — dispatch-only keeps costs at zero by default.
+on:
+  workflow_dispatch:
+    inputs:
+      publish_release:
+        description: "Publish to GitHub Releases (public download)"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build macOS .dmg (universal binary)
+    runs-on: macos-14
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build app bundle + dmg
+        run: bash installer/mac/build.sh
+      - name: Sanity-check the dmg (mount, app present, binary runs --help path check)
+        run: |
+          hdiutil attach dist/CineForge-AI.dmg -nobrowse -readonly -mountpoint /tmp/cfvol
+          test -d "/tmp/cfvol/CineForge AI.app"
+          test -x "/tmp/cfvol/CineForge AI.app/Contents/MacOS/CineForgeAI"
+          test -f "/tmp/cfvol/LEGGIMI.txt"
+          hdiutil detach /tmp/cfvol
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cineforge-dmg
+          path: dist/CineForge-AI.dmg
+          if-no-files-found: error
+      - name: Publish to GitHub Releases
+        if: inputs.publish_release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete v0.3.0 --yes --cleanup-tag 2>/dev/null || true
+          gh release create v0.3.0 dist/CineForge-AI.dmg \
+            --title "CineForge AI v0.3.0 — installer Mac" \
+            --latest \
+            --notes "Scarica **CineForge-AI.dmg**, trascina «CineForge AI» in Applicazioni, apri e clicca «Prepara e avvia». Serve [Docker Desktop](https://www.docker.com/products/docker-desktop/) (gratuito) — l'app ti guida. Primo avvio: 5–15 minuti. Motore immagini **gratuito incluso** (AI Horde, 0 €, senza carta). Guida: nel progetto (docs) e dentro l'app. Se il Mac dice che l'app non può essere aperta: clic destro → Apri → Apri."

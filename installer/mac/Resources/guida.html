@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CineForge AI — Guida passo-passo</title>
+<style>
+  :root { color-scheme: dark; }
+  body { margin:0; font-family:-apple-system,'Helvetica Neue',sans-serif; background:#0b0d16; color:#e7eaf3; line-height:1.6; }
+  main { max-width: 720px; margin: 0 auto; padding: 48px 24px 80px; }
+  h1 { font-size: 30px; margin: 0 0 6px; }
+  h2 { font-size: 20px; margin: 40px 0 10px; color:#a5b4fc; }
+  .tag { display:inline-block; background:#1c2140; color:#8fd0ff; border:1px solid #2a3160; padding:4px 12px; border-radius:999px; font-size:12px; }
+  .card { background:#121628; border:1px solid #232a4d; border-radius:14px; padding:18px 20px; margin:14px 0; }
+  code, .term { font-family: ui-monospace,Menlo,monospace; background:#0e1222; border:1px solid #232a4d; padding:2px 7px; border-radius:7px; font-size:13px; }
+  .term { display:block; padding:12px 14px; margin:10px 0; }
+  ol li, ul li { margin: 10px 0; }
+  a { color:#7dd3fc; }
+  .warn { border-color:#6b3fa0; background:#191233; }
+  .ok { color:#86efac; } .no { color:#fca5a5; }
+  footer { margin-top:56px; font-size:13px; color:#8b93b0; }
+</style>
+</head>
+<body>
+<main>
+  <span class="tag">Guida offline · inclusa nell'app</span>
+  <h1>🎬 CineForge AI — passo-passo</h1>
+  <p>Questa guida funziona anche senza internet (tranne i link). La stessa guida, sempre aggiornata, sta nel progetto GitHub.</p>
+
+  <h2>1 · Requisiti</h2>
+  <div class="card">
+    <p><span class="ok">✅</span> macOS 13 o successivo</p>
+    <p><span class="ok">✅</span> <a href="https://www.docker.com/products/docker-desktop/">Docker Desktop</a> (gratuito) — è l'unica cosa da installare: fa girare CineForge sul tuo Mac. L'app la apre per te se la trova, e ti porta al download se manca.</p>
+  </div>
+
+  <h2>2 · Primo avvio (una volta sola)</h2>
+  <ol>
+    <li>Apri <b>CineForge AI</b> (da Applicazioni).</li>
+    <li>Clicca <b>«Prepara e avvia CineForge sul mio Mac»</b> e scegli la cartella dove tenere il progetto (es. <code>Documenti</code>).</li>
+    <li>L'app scarica il codice e costruisce i servizi. <b>Il primo avvio dura 5–15 minuti</b> (scarica molto: è normale). Guarda i dettagli nella finestra.</li>
+    <li>Quando è pronto si apre <code>http://localhost:3000</code> nel browser.</li>
+  </ol>
+
+  <h2>3 · Se macOS dice che l'app «non può essere aperta»</h2>
+  <div class="card warn">
+    <p>Normale: l'app non ha la firma a pagamento di Apple (€99/anno). Puoi aprirla in sicurezza — è open source:</p>
+    <ul>
+      <li><b>Clic destro</b> sull'icona → <b>Apri</b> → <b>Apri</b> (basta una volta), oppure</li>
+      <li>Impostazioni di sistema → <b>Privacy e sicurezza</b> → in fondo «Apri comunque», oppure</li>
+      <li>Terminale: <span class="term">xattr -dr com.apple.quarantine "/Applications/CineForge AI.app"</span></li>
+    </ul>
+  </div>
+
+  <h2>4 · Crea la tua prima immagine (gratis)</h2>
+  <ol>
+    <li>Su <code>localhost:3000</code> clicca <b>Registrati</b> → arrivi con <b>200 crediti</b> gratis.</li>
+    <li>Crea un progetto → apri uno <b>Studio immagine</b>.</li>
+    <li>Scegli il motore <b>«AI Horde · community (free, no key)»</b>.</li>
+    <li>Scrivi il prompt (es. «via bagnata dalla pioggia, riflessi al neon») e premi <b>Genera</b>.</li>
+  </ol>
+  <div class="card">💸 <b>Costo: zero.</b> Il motore community usa le GPU dei volontari (progetto open <i>AI Horde</i>): a volte aspetti 30–120 secondi in coda, ed è questo il prezzo del gratis. Fa immagini ~512px, perfette per storyboard e bozze. <b>I video</b> richiedono un motore a pagamento opzionale (chiave tua).</div>
+
+  <h2>5 · Fermare e riavviare</h2>
+  <ul>
+    <li><b>Ferma tutto:</b> apri l'app → «Ferma i servizi».</li>
+    <li><b>Riavvia:</b> «Prepara e avvia» (dopo la prima volta è rapido).</li>
+    <li><b>Aggiorna all'ultima versione:</b> nel Terminale: <span class="term">cd ~/Documents/cineforge &amp;&amp; git pull</span> poi «Prepara e avvia».</li>
+  </ul>
+
+  <h2>6 · Problemi comuni</h2>
+  <div class="card">
+    <p><span class="no">❌</span> «Docker non si è avviato» → apri Docker Desktop dalla barra dei menu (balena 🐳), attendi che sia verde, poi riprova.</p>
+    <p><span class="no">❌</span> «L'avvio è fallito» → riapri Docker, controlla di avere ~6 GB liberi su disco, e riprova. I dettagli tecnici sono nella finestra dell'app.</p>
+    <p><span class="no">❌</span> «localhost:3000 non risponde dopo 20 minuti» → la costruzione può continuare in background: dopo qualche minuto clicca «Apri l'app nel browser».</p>
+    <p><span class="no">❌</span> Porta già usata → un'altra app usa la 3000/8000: chiudila, o nel Terminale <code>docker compose down</code> e riprova.</p>
+  </div>
+
+  <footer>CineForge AI · progetto open source · motore gratuito: AI Horde (Haidra-org/AI-Horde) · nessuna carta richiesta</footer>
+</main>
+</body>
+</html>

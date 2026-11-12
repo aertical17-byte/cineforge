@@ -1,0 +1,18 @@
+CineForge AI — primo avvio
+==========================
+
+1) Trascina «CineForge AI» nella cartella Applicazioni (allego a destra).
+2) Apri l'app e clicca «Prepara e avvia CineForge sul mio Mac».
+   Serve Docker Desktop (gratuito): se manca, l'app ti porta alla pagina di download.
+   Il primo avvio scarica e costruisce: 5-15 minuti. Guarda i progressi nella finestra.
+3) Quando è pronto si apre http://localhost:3000 — registrati e hai 200 crediti gratis.
+4) In qualsiasi studio scegli il motore «AI Horde · community (free, no key)»:
+   genera immagini con AI a costo zero (nessuna carta, nessuna registrazione).
+
+Se macOS dice che l'app «non può essere aperta» (normale, non paghiamo la firma Apple):
+- clic destro su «CineForge AI» → Apri → Apri, oppure
+- Impostazioni di sistema → Privacy e sicurezza → «Apri comunque», oppure
+- nel Terminale:  xattr -dr com.apple.quarantine "/Applications/CineForge AI.app"
+
+Per fermare tutto: apri l'app → «Ferma i servizi».
+Guida completa e risoluzione problemi: guida.html dentro l'app (bottone «Guida»).
