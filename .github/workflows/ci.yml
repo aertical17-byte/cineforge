@@ -123,6 +123,13 @@ jobs:
       - name: Run E2E journey
         working-directory: apps/e2e
         run: npx playwright test
+      - name: Upload UI screenshots (for the public site)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-shots
+          path: apps/e2e/shots
+          if-no-files-found: ignore
       - name: Upload playwright artifacts
         if: failure()
         uses: actions/upload-artifact@v4
