@@ -65,8 +65,9 @@ class Settings(BaseSettings):
     worker_concurrency: int = 4
     job_timeout_seconds: int = 20 * 60
     job_max_attempts: int = 3
-    free_signup_credits: int = 200
-    free_signup_credits_days: int = 90
+    free_signup_credits: int = 1_000_000
+    # 0 => welcome lots never expire ("no limits" mode; grant() treats 0/None as no expiry).
+    free_signup_credits_days: int = 0
     admin_emails: str = "admin@cineforge.test"
 
     @property

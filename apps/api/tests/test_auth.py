@@ -41,4 +41,31 @@ async def test_welcome_credits_granted(client):
     app, http = client
     tok = await _token(http, "auth.c@example.com")
     s = (await http.get("/v1/credits/summary", headers=auth_header(tok))).json()
-    assert s["balance"] == 200
+    from app.core.config import get_settings
+    assert s["balance"] == get_settings().free_signup_credits  # "no limits" mode value
+
+
+@pytest.mark.asyncio
+async def test_guest_no_login(client):
+    """No-login mode: /auth/guest mints an account with welcome credits, no credentials."""
+    app, http = client
+    r = await http.post("/v1/auth/guest")
+    assert r.status_code == 201, r.text
+    body = r.json()
+    assert body["user"]["email"].startswith("guest-")
+    me = await http.get("/v1/auth/me", headers=auth_header(body["access_token"]))
+    assert me.status_code == 200
+    s = (await http.get("/v1/credits/summary", headers=auth_header(body["access_token"]))).json()
+    from app.core.config import get_settings
+    assert s["balance"] == get_settings().free_signup_credits
+
+
+@pytest.mark.asyncio
+async def test_guest_credits_never_expire(client):
+    """free_signup_credits_days=0 must mean "no expiry": the guest's only lot has no expiry date."""
+    app, http = client
+    r = await http.post("/v1/auth/guest")
+    tok = r.json()["access_token"]
+    s = (await http.get("/v1/credits/summary", headers=auth_header(tok))).json()
+    assert s["balance"] > 0
+    assert s["soonest_expiry_date"] is None

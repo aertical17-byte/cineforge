@@ -1,7 +1,8 @@
-"""auth router: register/login/forgot + validates strong inputs; audit + rate-limited."""
+"""auth router: register/login/forgot/guest + validates strong inputs; audit + rate-limited."""
 from __future__ import annotations
 
 import datetime as dt
+import secrets
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
@@ -40,6 +41,34 @@ async def register(body: RegisterRequest, request: Request, s: AsyncSession = De
         await credit_svc.grant(s, u.id, S.free_signup_credits, "promo", "signup",
                                "welcome credits", S.free_signup_credits_days)
     s.add(AuditLog(action="auth.register", entity="user", entity_id=u.id, ip=ip))
+    await s.commit()
+    return TokenResponse(access_token=create_access_token(u.id), user=UserOut.model_validate(u))
+
+
+@router.post("/guest", response_model=TokenResponse, status_code=201)
+async def guest(request: Request, s: AsyncSession = Depends(session)):
+    """No-login mode: mint an ephemeral guest account on the fly.
+
+    The included engines (AI Horde community / mock in tests) need no credentials, so the
+    product itself requires no signup: the web app calls this once per browser and stores
+    the token. Guests get the same welcome lots as registered users ("no limits" mode).
+    The account is identified only by its browser token — no email is collected.
+    """
+    ip = request.client.host if request.client else "unknown"
+    if not limiter.hit(f"auth:{ip}", S.auth_rate_limit_per_minute):
+        raise HTTPException(status.HTTP_429_TOO_MANY_REQUESTS, "too many attempts")
+    rand = secrets.token_hex(8)
+    u = User(email=f"guest-{rand}@cineforge.local",
+             password_hash=hash_password(secrets.token_urlsafe(24)),
+             display_name=f"Guest {rand[:4].upper()}",
+             consent_likeness=False)
+    u.profile = Profile(bio="")
+    s.add(u)
+    await s.flush()
+    if S.free_signup_credits > 0:
+        await credit_svc.grant(s, u.id, S.free_signup_credits, "promo", "guest",
+                               "welcome credits (guest, no signup)", S.free_signup_credits_days or None)
+    s.add(AuditLog(action="auth.guest", entity="user", entity_id=u.id, ip=ip))
     await s.commit()
     return TokenResponse(access_token=create_access_token(u.id), user=UserOut.model_validate(u))
 

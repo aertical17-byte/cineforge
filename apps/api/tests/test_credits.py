@@ -60,6 +60,7 @@ async def test_insufficient_credits_rejected_with_402(client):
     app, http = client
     tok = await _token(http, "credits.c@example.com")
     h = auth_header(tok)
+    me = (await http.get("/v1/auth/me", headers=h)).json()
 
     const_request = {
         "media_type": "video", "task": "text2video", "model_id": "wan-14b",
@@ -73,16 +74,22 @@ async def test_insufficient_credits_rejected_with_402(client):
     async def balance() -> int:
         return (await http.get("/v1/credits/summary", headers=h)).json()["balance"]
 
-    assert (await balance()) == 200 - cost  # reserved up-front in the same transaction
+    from app.core.config import get_settings
+    assert (await balance()) == get_settings().free_signup_credits - cost  # reserved up-front in the same transaction
 
-    # Spend down deterministically; the ledger must never go below zero.
-    for _ in range(10):
-        if (await balance()) < cost:
-            break
-        r = await http.post("/v1/generations", headers=h, json=const_request)
-        assert r.status_code in (201, 402), r.text
+    # "No limits" mode gives every account a huge balance; to exercise the insolvency path,
+    # shrink the user's lots directly (the ledger math below is what the 402 guard protects).
+    import sqlalchemy as sa
+    from tests.conftest import SessionFactory
+    async with SessionFactory() as s:
+        await s.execute(
+            sa.text("UPDATE credit_transactions SET remaining = 5 "
+                    "WHERE user_id = :uid AND remaining > 0"),
+            {"uid": me["id"]},
+        )
+        await s.commit()
 
     insolvent = await http.post("/v1/generations", headers=h, json=const_request)
     assert insolvent.status_code == 402, insolvent.text
     assert insolvent.json()["detail"]["code"] == "INSUFFICIENT_CREDITS"
-    assert (await balance()) < cost  # still solvent invariants: no negative balance
+    assert (await balance()) == 5  # honest invariant: no negative balance, no partial spend

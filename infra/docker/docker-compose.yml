@@ -30,7 +30,9 @@ services:
       STORAGE_BACKEND: local
       STORAGE_LOCAL_DIR: /data/storage
       REDIS_URL: redis://redis:6379/0
-      FREE_SIGNUP_CREDITS: "200"
+      # "No limits" mode: every account (registered or automatic guest) gets 1,000,000
+      # welcome credits that never expire — the only real cap is the AI Horde queue.
+      FREE_SIGNUP_CREDITS: "1000000"
       # Free community generation: anonymous AI Horde key, no signup/card needed.
       AIHORDE_ENABLED: "true"
       AIHORDE_API_KEY: ${AIHORDE_API_KEY:-0000000000}
