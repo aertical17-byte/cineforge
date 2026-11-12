@@ -53,4 +53,5 @@ async def test_horde_disabled_in_test_env_fails_honestly_and_refunds(client):
     assert len(d["assets"]) == 0
 
     ledger = (await http.get("/v1/credits/summary", headers=h)).json()
-    assert ledger["balance"] == 200, "2 reserved credits refunded on honest failure"
+    from app.core.config import get_settings
+    assert ledger["balance"] == get_settings().free_signup_credits, "2 reserved credits refunded on honest failure"

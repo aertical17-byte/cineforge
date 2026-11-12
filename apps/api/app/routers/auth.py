@@ -58,7 +58,9 @@ async def guest(request: Request, s: AsyncSession = Depends(session)):
     if not limiter.hit(f"auth:{ip}", S.auth_rate_limit_per_minute):
         raise HTTPException(status.HTTP_429_TOO_MANY_REQUESTS, "too many attempts")
     rand = secrets.token_hex(8)
-    u = User(email=f"guest-{rand}@cineforge.local",
+    # example.com: the placeholder domain email-validator permits (reserved for docs,
+    # never routable) — .local/.test are rejected at parse time by the library.
+    u = User(email=f"guest-{rand}@example.com",
              password_hash=hash_password(secrets.token_urlsafe(24)),
              display_name=f"Guest {rand[:4].upper()}",
              consent_likeness=False)

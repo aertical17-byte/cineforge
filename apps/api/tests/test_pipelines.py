@@ -67,8 +67,8 @@ async def test_chain_spawns_next_step_and_succeeds(client):
 
     # ledger: two spends, one per step (mock-engine image 1cr; video = 1 base + 4s·1cr/s)
     ledger = (await http.get("/v1/credits/summary", headers=h)).json()
-    assert ledger["balance"] == 200 - 6
-
+    from app.core.config import get_settings
+    assert ledger["balance"] == get_settings().free_signup_credits - 6
 
 @pytest.mark.asyncio
 async def test_chain_validation_rejects_bad_specs(client):

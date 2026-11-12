@@ -27,6 +27,17 @@ async def balance(session: AsyncSession, user_id: str) -> int:
     return int(res.scalar_one())
 
 
+def _expiry_key(lot: CreditTransaction) -> dt.datetime:
+    """Comparable expiry: None (never expires) sorts last; naive datetimes (sqlite storage)
+    are normalized to aware-UTC so they never mix with aware ones (Postgres storage)."""
+    e = lot.expires_at
+    if e is None:
+        return dt.datetime.max.replace(tzinfo=dt.timezone.utc)
+    if e.tzinfo is None:
+        return e.replace(tzinfo=dt.timezone.utc)
+    return e
+
+
 async def summary(session: AsyncSession, user_id: str) -> dict:
     res = await session.execute(
         select(CreditTransaction)
@@ -35,7 +46,7 @@ async def summary(session: AsyncSession, user_id: str) -> dict:
     )
     lots = res.scalars().all()
     sub = sum(l.remaining for l in lots if l.kind == "subscription")
-    others = sorted([l for l in lots if l.kind != "subscription"], key=lambda l: (l.expires_at or dt.datetime.max.replace(tzinfo=dt.timezone.utc)))
+    others = sorted([l for l in lots if l.kind != "subscription"], key=_expiry_key)
     soonest_lot = sum(l.remaining for l in others[:1])
     soonest_date = others[0].expires_at if others else None
     return {
