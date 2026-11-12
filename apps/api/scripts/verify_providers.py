@@ -48,11 +48,12 @@ def main():
     else:
         results["fal"] = {"skipped": "FAL_KEY missing"}
 
-    # AI Horde: free community tier — anonymous key, no key material needed.
+    # AI Horde: free community tier — reachability via the public heartbeat (no auth),
+    # anonymous concurrency/limits are enforced at submit time.
     try:
-        r = httpx.get(f"{HORDE_BASE}/users/me",
-                      headers={"apikey": HORDE_ANON_KEY, "Client-Agent": HORDE_AGENT}, timeout=30)
-        results["aihorde"] = {"reachable": r.status_code == 200, "status": r.status_code}
+        r = httpx.get(f"{HORDE_BASE}/status/heartbeat", timeout=30)
+        results["aihorde"] = {"reachable": r.status_code == 200 and "heartbeat" in r.json(),
+                              "status": r.status_code}
     except Exception as e:  # noqa: BLE001
         results["aihorde"] = {"reachable": False, "error": str(e)}
 
@@ -76,7 +77,8 @@ def horde_generate_once() -> dict:
     req = ImageRequest(prompt="a rain-soaked neon street reflected in puddles, cinematic still",
                        aspect_ratio="16:9", seed=20261111)
     try:
-        result = provider.generate_image(req)  # submits + polls internally (real adapter path)
+        import asyncio
+        result = asyncio.run(provider.generate_image(req))  # submits + polls internally (real adapter path)
         import pathlib
         pathlib.Path("logs").mkdir(parents=True, exist_ok=True)
         out = "logs/horde-smoke.webp"

@@ -23,7 +23,15 @@ jobs:
         run: python scripts/verify_providers.py logs/verify_providers.json
       - name: One REAL free generation through the anonymous path
         working-directory: apps/api
-        run: python scripts/verify_providers.py logs/verify_providers_gen.json --generate
+        run: |
+          python scripts/verify_providers.py logs/verify_providers_gen.json --generate
+          python - <<'PY'
+          import json
+          d = json.load(open("logs/verify_providers_gen.json"))
+          gen = d.get("aihorde_generate") or {}
+          assert gen.get("ok") is True and gen.get("bytes", 0) > 1000, json.dumps(d, indent=2)
+          print("FREE GENERATION VERIFIED:", gen)
+          PY
       - name: Upload smoke artifact
         if: always()
         uses: actions/upload-artifact@v4
