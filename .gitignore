@@ -19,3 +19,6 @@ test-results/
 site/downloads/*.dmg
 *.tsbuildinfo
 apps/web/.venv-tmp
+
+# generated at build time by installer/mac/make_assets.py (CI)
+installer/mac/assets/
