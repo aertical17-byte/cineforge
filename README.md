@@ -47,14 +47,14 @@ With [Docker](https://www.docker.com/get-started/) installed:
 git clone https://github.com/aertical17-byte/cineforge.git
 cd cineforge
 docker compose --project-directory . -f infra/docker/docker-compose.yml up -d --build
-# when it's ready: http://localhost:3000
+# when it's ready: http://localhost:8766/studio/
 ```
 
 ---
 
 ## 🎥 Your first image (free, for real)
 
-1. Open `http://localhost:3000` — **you're already in**: automatic guest session, no signup, **unlimited credits** (1,000,000 welcome ones, never expiring)
+1. Open `http://localhost:8766/studio/` — **you're already in**: automatic guest session, no signup, **unlimited credits** (1,000,000 welcome ones, never expiring)
 2. Open a studio → pick the engine **"AI Horde · community (free, no key)"**
 3. Write the prompt and generate ⚡
 
