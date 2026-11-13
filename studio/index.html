@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CineForge Light Studio — the studio in your browser, nothing to install</title>
+<meta name="description" content="CineForge Light Studio: free image generation on the community engine, director presets with 22 camera moves, and the full room catalog. No Docker, no signup, no card — nothing installs on your computer.">
+<style>
+:root {
+  --bg: #07080f; --bg-2: #0b0d18; --panel: #10131f; --panel-2: #151827;
+  --border: #262c4d; --border-soft: #1a1f38;
+  --text: #eef0f8; --muted: #a3aac7; --faint: #6d7594;
+  --accent: #8b7cf7; --accent-2: #22d3ee; --ok: #86efac;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, "Helvetica Neue", sans-serif;
+  line-height: 1.6; -webkit-font-smoothing: antialiased; }
+a { color: #8fd0ff; text-decoration: none; } a:hover { text-decoration: underline; }
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 22px; }
+::selection { background: rgba(139,124,247,.35); }
+.glow { position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background: radial-gradient(760px 400px at 22% -10%, rgba(139,124,247,.17), transparent 65%),
+              radial-gradient(640px 360px at 88% 2%, rgba(34,211,238,.10), transparent 60%),
+              radial-gradient(1000px 540px at 50% 118%, rgba(124,58,237,.13), transparent 70%); }
+
+.topbar { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(16px);
+  background: rgba(7,8,15,.8); border-bottom: 1px solid var(--border-soft); }
+.topbar .wrap { display: flex; align-items: center; gap: 20px; height: 62px; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 15px; color: var(--text); }
+.logo { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center;
+  background: linear-gradient(135deg, #6d5ef0, #8b7cf7); font-size: 12px; font-weight: 800; color: #fff; }
+.topbar nav { margin-left: auto; display: flex; gap: 18px; font-size: 13.5px; align-items: center; }
+.topbar nav a { color: var(--muted); } .topbar nav a:hover { color: var(--text); text-decoration: none; }
+.topbar .cta { background: #fff; color: #07080f !important; padding: 8px 16px; border-radius: 999px; font-weight: 700; }
+
+.hero { padding: 64px 0 30px; text-align: center; }
+.kicker { display: inline-flex; align-items: center; gap: 12px; font-size: 12px; font-weight: 700;
+  letter-spacing: .3em; text-transform: uppercase; color: var(--accent-2); margin-bottom: 18px; }
+.kicker::before, .kicker::after { content: ""; width: 34px; height: 1px; background: linear-gradient(90deg, transparent, var(--accent-2)); }
+.kicker::after { background: linear-gradient(90deg, var(--accent-2), transparent); }
+h1 { font-size: clamp(34px, 6vw, 64px); margin: 0 0 14px; line-height: 1.02; font-weight: 800; letter-spacing: -.03em; }
+h1 .grad { background: linear-gradient(110deg, #a78bfa, #8b7cf7, #22d3ee); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.lead { color: var(--muted); max-width: 660px; margin: 0 auto 22px; font-size: 16.5px; }
+.chips { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 8px; }
+.pill-ok { font-size: 12.5px; color: #a7f3d0; background: rgba(134,239,172,.08);
+  border: 1px solid rgba(134,239,172,.25); border-radius: 999px; padding: 5px 14px; }
+.pill-info { font-size: 12.5px; color: #c4bafd; background: rgba(139,124,247,.1);
+  border: 1px solid rgba(139,124,247,.35); border-radius: 999px; padding: 5px 14px; }
+
+section { padding: 40px 0; }
+.section-title { font-size: clamp(24px, 3.6vw, 38px); margin: 0 0 8px; letter-spacing: -.02em; font-weight: 800; }
+.section-sub { color: var(--muted); margin: 0 0 30px; max-width: 720px; }
+
+.catalog .group { margin-bottom: 34px; }
+.catalog .group h3 { font-size: 13px; letter-spacing: .2em; text-transform: uppercase; color: var(--accent-2); margin: 0 0 12px; font-weight: 800; }
+.cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.card { text-align: left; background: linear-gradient(180deg, var(--panel-2), var(--panel));
+  border: 1px solid var(--border-soft); border-radius: 16px; padding: 16px; cursor: pointer;
+  color: var(--text); font: inherit; transition: .16s; display: flex; flex-direction: column; gap: 6px; }
+.card:hover { transform: translateY(-3px); border-color: rgba(139,124,247,.5); box-shadow: 0 22px 60px -28px rgba(139,124,247,.55); }
+.card .row { display: flex; align-items: center; gap: 9px; }
+.card .ico { font-size: 19px; }
+.card b { font-size: 14.5px; font-weight: 700; }
+.card p { margin: 0; color: var(--muted); font-size: 12.5px; line-height: 1.45; }
+.badge { margin-left: auto; flex-shrink: 0; font-size: 10px; font-weight: 800; letter-spacing: .08em; padding: 3px 9px; border-radius: 999px; text-transform: uppercase; }
+.badge.free { color: #a7f3d0; background: rgba(134,239,172,.1); border: 1px solid rgba(134,239,172,.3); }
+.badge.byo { color: #c4bafd; background: rgba(139,124,247,.12); border: 1px solid rgba(139,124,247,.35); }
+.badge.link { color: #9bd7ff; background: rgba(34,211,238,.08); border: 1px solid rgba(34,211,238,.3); }
+.badge.plan { color: var(--faint); background: rgba(109,117,148,.12); border: 1px solid var(--border); }
+
+/* atelier */
+.atelier { display: none; background: linear-gradient(160deg, var(--panel-2), var(--panel));
+  border: 1px solid rgba(139,124,247,.4); border-radius: 22px; padding: 30px;
+  box-shadow: 0 34px 100px -46px rgba(139,124,247,.55); margin-top: 10px; }
+.atelier.open { display: block; }
+.atelier .head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 20px; flex-wrap: wrap; }
+.atelier h2 { margin: 0; font-size: 26px; letter-spacing: -.02em; }
+.atelier .close { margin-left: auto; background: none; border: 1px solid var(--border); color: var(--muted);
+  border-radius: 999px; padding: 7px 16px; cursor: pointer; font: inherit; font-size: 13px; }
+.atelier .close:hover { border-color: var(--accent); color: var(--text); }
+.grid2 { display: grid; grid-template-columns: 1.05fr .95fr; gap: 26px; }
+.field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 13px; }
+.field label { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--faint); }
+textarea, select, input { width: 100%; background: #0b0e1a; border: 1px solid var(--border); color: var(--text);
+  border-radius: 10px; padding: 10px 12px; font: inherit; font-size: 14px; }
+textarea { min-height: 88px; resize: vertical; }
+select:focus, textarea:focus { outline: 2px solid rgba(139,124,247,.5); }
+.frow { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-weight: 700; font-size: 15px;
+  padding: 13px 26px; border-radius: 999px; border: 1px solid transparent; cursor: pointer; font-family: inherit; transition: .18s; }
+.btn.primary { background: #fff; color: #07080f; box-shadow: 0 18px 60px -18px rgba(139,124,247,.7); }
+.btn.primary:hover { transform: translateY(-2px); }
+.btn.primary:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+.btn.ghost { border-color: var(--border); color: var(--text); background: rgba(16,19,31,.6); }
+.btn.ghost:hover { border-color: var(--accent); }
+.btn.small { font-size: 13px; padding: 9px 18px; }
+.status { min-height: 22px; font-size: 13.5px; color: var(--muted); margin-top: 10px; }
+.status.err { color: #fda4af; }
+.status.done { color: var(--ok); }
+.result { display: flex; flex-direction: column; gap: 12px; }
+.result .frame { background: #0b0e1a; border: 1px solid var(--border-soft); border-radius: 16px; min-height: 280px;
+  display: grid; place-items: center; overflow: hidden; position: relative; }
+.result .frame img { max-width: 100%; display: block; }
+.result .frame .hint { color: var(--faint); font-size: 13.5px; padding: 24px; text-align: center; }
+.result .meta { font-size: 12px; color: var(--faint); }
+.result .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.spin { width: 26px; height: 26px; border-radius: 50%; border: 3px solid var(--border); border-top-color: var(--accent);
+  animation: sp 1s linear infinite; margin-bottom: 10px; }
+@keyframes sp { to { transform: rotate(360deg); } }
+
+/* byo dialog */
+.overlay { display: none; position: fixed; inset: 0; background: rgba(4,5,10,.7); backdrop-filter: blur(6px); z-index: 50; place-items: center; padding: 20px; }
+.overlay.open { display: grid; }
+.modal { max-width: 560px; width: 100%; background: var(--panel); border: 1px solid var(--border);
+  border-radius: 20px; padding: 28px; }
+.modal h3 { margin: 0 0 10px; font-size: 20px; }
+.modal p { color: var(--muted); font-size: 14px; margin: 8px 0; }
+.modal code { background: #0b0e1a; border: 1px solid var(--border); padding: 1px 7px; border-radius: 6px; font-size: 12px; }
+
+/* gallery */
+.gal { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
+.gal figure { margin: 0; background: var(--panel); border: 1px solid var(--border-soft); border-radius: 12px; overflow: hidden; }
+.gal img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; cursor: pointer; }
+.gal figcaption { padding: 8px 10px; font-size: 11px; color: var(--faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gal .del { position: absolute; }
+.gal-empty { color: var(--faint); font-size: 14px; }
+
+footer { border-top: 1px solid var(--border-soft); padding: 30px 0 44px; color: var(--faint); font-size: 12.5px; }
+footer .fineprint { max-width: 860px; }
+
+@media (max-width: 980px) {
+  .cards { grid-template-columns: repeat(2, 1fr); }
+  .grid2 { grid-template-columns: 1fr; }
+  .gal { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 560px) {
+  .cards { grid-template-columns: 1fr; }
+  .gal { grid-template-columns: repeat(2, 1fr); }
+  .frow { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="glow"></div>
+
+<header class="topbar">
+  <div class="wrap">
+    <span class="brand"><span class="logo">CF</span> CineForge&nbsp;AI · Light&nbsp;Studio</span>
+    <nav>
+      <a href="#studios">Rooms</a>
+      <a href="#atelier" id="navAtelier">Image Atelier</a>
+      <a href="#gallery">Gallery</a>
+      <a href="https://github.com/aertical17-byte/cineforge/tree/main/docs" target="_blank" rel="noopener">Docs</a>
+      <a class="cta" href="#studios">Start creating</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- HERO -->
+  <div class="hero">
+    <div class="wrap">
+      <span class="kicker">Light mode — nothing to install</span>
+      <h1>The studio, <span class="grad">in your browser.</span></h1>
+      <p class="lead">No Docker, no 6 GB of disk, no setup. The free community engine generates images right here — and the full room catalog shows exactly what works now and what needs your own engine. <b>Honest by design: nothing pretends.</b></p>
+      <div class="chips">
+        <span class="pill-ok" id="engineChip">🟢 free engine: checking…</span>
+        <span class="pill-ok">🚫 no signup — you're in already</span>
+        <span class="pill-ok">💳 no card, ever</span>
+        <span class="pill-info">🪶 runs client-side: your prompts stay yours</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ATELIER -->
+  <section id="atelier">
+    <div class="wrap">
+      <div class="atelier" id="atelierBox">
+        <div class="head">
+          <h2>🖼️ Image Atelier</h2>
+          <span class="pill-ok">free · community engine</span>
+          <button class="close" id="atelierClose">Close ✕</button>
+        </div>
+        <div class="grid2">
+          <div>
+            <div class="field">
+              <label for="prompt">Shot prompt</label>
+              <textarea id="prompt" placeholder="a rain-wet street at night, neon reflections on asphalt, one silhouetted figure with an umbrella"></textarea>
+            </div>
+            <div class="frow">
+              <div class="field">
+                <label for="move">Camera move (22 real ones)</label>
+                <select id="move"><option value="">— none —</option></select>
+              </div>
+              <div class="field">
+                <label for="genre">Genre</label>
+                <select id="genre"><option value="">— none —</option></select>
+              </div>
+            </div>
+            <div class="frow">
+              <div class="field">
+                <label for="palette">Palette</label>
+                <select id="palette"><option value="">— none —</option></select>
+              </div>
+              <div class="field">
+                <label for="light">Lighting</label>
+                <select id="light"><option value="">— none —</option></select>
+              </div>
+            </div>
+            <div class="frow">
+              <div class="field">
+                <label for="lens">Lens</label>
+                <select id="lens"><option value="">— none —</option></select>
+              </div>
+              <div class="field">
+                <label for="era">Era</label>
+                <select id="era"><option value="">— none —</option></select>
+              </div>
+            </div>
+            <div class="frow">
+              <div class="field">
+                <label for="tempo">Tempo</label>
+                <select id="tempo"><option value="">— none —</option></select>
+              </div>
+              <div class="field">
+                <label for="size">Frame size</label>
+                <select id="size">
+                  <option value="512x512">512 × 512 (fastest)</option>
+                  <option value="512x384">512 × 384 landscape</option>
+                  <option value="384x512">384 × 512 portrait</option>
+                  <option value="640x512">640 × 512</option>
+                  <option value="512x640">512 × 640</option>
+                  <option value="768x512">768 × 512 (slower)</option>
+                  <option value="512x768">512 × 768 (slower)</option>
+                  <option value="768x768">768 × 768 (slow)</option>
+                  <option value="1024x1024">1024 × 1024 (very slow)</option>
+                </select>
+              </div>
+            </div>
+            <div class="frow">
+              <div class="field">
+                <label for="steps">Detail steps</label>
+                <select id="steps">
+                  <option value="16">16 — quick draft</option>
+                  <option value="20" selected>20 — balanced</option>
+                  <option value="28">28 — detailed (slower)</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="model">Engine model</label>
+                <select id="model"><option value="">any available (recommended)</option></select>
+              </div>
+            </div>
+            <button class="btn primary" id="genBtn">✨ Generate — free</button>
+            <div class="status" id="status">Write a shot and press Generate. Queue is usually 30–120 s — that's the honest price of free.</div>
+          </div>
+          <div class="result">
+            <div class="frame" id="frame"><div class="hint">Your generated frame appears here.<br><br>Everything runs in your browser against the free community engine — no account, no keys, nothing installed.</div></div>
+            <div class="meta" id="meta"></div>
+            <div class="actions">
+              <button class="btn ghost small" id="saveBtn" disabled>💾 Save</button>
+              <button class="btn ghost small" id="openBtn" disabled>↗ Open full size</button>
+              <button class="btn ghost small" id="keepBtn" disabled>🗂 Keep in gallery</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CATALOG -->
+  <section id="studios">
+    <div class="wrap">
+      <div class="eyebrow" style="color:var(--accent-2);font-size:12px;font-weight:800;letter-spacing:.22em;text-transform:uppercase;margin-bottom:10px">The full room catalog</div>
+      <h2 class="section-title">Every room, honestly labeled</h2>
+      <p class="section-sub">Green = works right now on the free engine. Violet = needs an engine that isn't free yet — connect your own key in the full local app. Nothing here fakes a result.</p>
+      <div class="catalog" id="catalog"></div>
+    </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section id="gallery">
+    <div class="wrap">
+      <h2 class="section-title">🗂 Your gallery</h2>
+      <p class="section-sub">Kept in this browser only (localStorage) — never uploaded anywhere by this page.</p>
+      <div class="gal" id="gal"></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p class="fineprint"><b>CineForge AI · Light Studio</b> — free, no login, no card. Images are generated by the AI Horde community engine (volunteers' GPUs, open project <a href="https://github.com/Haidra-org/AI-Horde">Haidra-org/AI-Horde</a>) directly from your browser. Rooms labeled “your engine” are not wired to a free engine yet: the full local app (Docker, optional) accepts your own API keys. This page never fakes generation results. © 2026 — independent open source project.</p>
+  </div>
+</footer>
+
+<!-- BYO modal -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h3 id="byoTitle">Room</h3>
+    <p id="byoDesc"></p>
+    <p><b>Honest status: not wired to a free engine yet.</b> Video, editing and consistency models cost real GPU money — this studio won't pretend otherwise.</p>
+    <p>Two real paths today:</p>
+    <p>1 · <b>Full local mode</b> — the Mac app can run the complete product on your machine (Docker, optional) where you can connect <i>your own</i> API keys for video engines like Kling, Veo, WAN or Seedance. Your credits, your machine, your keys.</p>
+    <p>2 · <b>Use what's free now</b> — the Image Atelier covers storyboards, frames and concepts at $0.</p>
+    <div style="display:flex; gap:10px; margin-top:16px; flex-wrap:wrap">
+      <a class="btn primary small" href="https://github.com/aertical17-byte/cineforge#-no-mac-or-prefer-commands" target="_blank" rel="noopener">Full mode guide ↗</a>
+      <button class="btn ghost small" id="byoClose">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---------- Real registry data (from packages/shared/data/creative_registries.json) ---------- */
+const MOVES = ["Static","Zoom In","Zoom Out","Dolly In","Dolly Out","Orbit Left","Orbit Right","Pan Left","Pan Right","Tilt Up","Tilt Down","Crane Up","Crane Down","Tracking Shot","FPV Drone","Drone Shot","Handheld","POV","Robot Arm","Helicopter Shot","Dolly Zoom (Vertigo)","Push + Slow Motion"];
+const GENRES = ["General","Action","Horror","Comedy","Noir","Drama","Epic"];
+const PALETTES = ["Neutral Weave","Kodiak Teal","Bloodline Red","Arctic Blue","Amber Retro","Noir Ink","Cyan Dream","Desert Gold","Emerald Green","VHS Bloom","Rose Neon","Sepia Archive","Steel Gray","Purple Haze","Candy Pop","Bleach Bypass","Forest Mist","Midnight Sapphire","Tangerine Sunset","Porcelain Film","Copper Pot","Clinical White","Toxic Lime","Storm Graded"];
+const LIGHTS = ["Natural","Golden Hour","Noir","Studio","Neon Night","Firelight"];
+const LENSES = ["Clean Sharp","Wide 18mm","Normal 35mm","Portrait 85mm","Telephoto 135mm","Anamorphic","Vintage Soft","Fisheye"];
+const ERAS = ["1960s","1970s","1980s","1990s","2000s","2010s","2020s"];
+const TEMPO = ["Single Shot","Glacial","Standard","Kinetic","Chaotic"];
+
+function fill(id, list) {
+  const sel = document.getElementById(id);
+  for (const v of list) { const o = document.createElement("option"); o.value = v; o.textContent = v; sel.appendChild(o); }
+}
+fill("move", MOVES); fill("genre", GENRES); fill("palette", PALETTES);
+fill("light", LIGHTS); fill("lens", LENSES); fill("era", ERAS); fill("tempo", TEMPO);
+
+/* ---------- Catalog (renamed rooms; honest tags) ---------- */
+const CATALOG = [
+  { group: "Make", items: [
+    { n: "Image Atelier", i: "🖼️", t: "free", d: "Text-to-image on the free community engine — works right now, no key, no card.", act: "atelier" },
+    { n: "Motion Forge", i: "🎬", t: "byo", d: "Text-to-video clips, with duration and aspect control." },
+    { n: "FX Booth", i: "✨", t: "byo", d: "Effects and transforms applied to a clip." },
+    { n: "Still-to-Motion", i: "🎞️", t: "byo", d: "Animate a still frame into a moving shot." },
+    { n: "Script-to-Screen", i: "📜", t: "byo", d: "From screenplay text to directed scenes." },
+    { n: "Cut Room", i: "✂️", t: "byo", d: "Timeline editing for generated clips." },
+    { n: "Clip Foundry", i: "📱", t: "byo", d: "Vertical shorts, auto-formatted for feeds." },
+    { n: "Ghost Channel", i: "👻", t: "byo", d: "Narration + visuals — no face on camera." },
+    { n: "Explainer Lab", i: "💡", t: "byo", d: "Turn a topic into a step-by-step explainer." },
+    { n: "Retouch Bench", i: "🖌️", t: "byo", d: "Edit and restyle an existing image." },
+    { n: "Patchwork", i: "🩹", t: "byo", d: "Inpaint: fix or replace parts of a frame." },
+    { n: "Magnifier", i: "🔍", t: "byo", d: "Upscale images beyond their native size." },
+    { n: "Detail Boost", i: "🧬", t: "byo", d: "Video upscaling and frame smoothing." },
+    { n: "Collage Machine", i: "🗂️", t: "byo", d: "Mixed media: blend photos, art and video." },
+    { n: "Second Face", i: "🎭", t: "byo", d: "Consistent face swap between portraits." },
+    { n: "Persona Feed", i: "📸", t: "byo", d: "A virtual persona, post after post." },
+  ]},
+  { group: "Engines · included free", items: [
+    { n: "AI Horde · community", i: "🆓", t: "free", d: "Open community models (Flux / SDXL family) on volunteers' GPUs. Already active in the Atelier.", act: "atelier" },
+  ]},
+  { group: "Engines · bring your own key", items: [
+    { n: "Kling family", i: "🔗", t: "byo", d: "Video generation — connect your own API key in full local mode." },
+    { n: "Veo family", i: "🔗", t: "byo", d: "Video generation — connect your own API key in full local mode." },
+    { n: "WAN family", i: "🔗", t: "byo", d: "Video generation — connect your own API key in full local mode." },
+    { n: "Seedance family", i: "🔗", t: "byo", d: "Video generation — connect your own API key in full local mode." },
+    { n: "MiniMax · Grok Imagine", i: "🔗", t: "byo", d: "Video/image engines — connect your own API key." },
+    { n: "GPT Image · Ideogram · Seedream", i: "🔗", t: "byo", d: "Image APIs — connect your own key for studio-grade output." },
+  ]},
+  { group: "Rooms", items: [
+    { n: "Film Room", i: "🎥", t: "free", d: "Shot design with the 22 camera moves + director presets, rendered on the free engine.", act: "film" },
+    { n: "Ad Room", i: "📣", t: "byo", d: "Product shots and ad cuts with brand framing." },
+    { n: "Campaign Room", i: "📊", t: "byo", d: "Multi-format campaign assets from one brief." },
+    { n: "Lip-Sync Booth", i: "👄", t: "byo", d: "Match a voice track to a talking face." },
+    { n: "Popcorn Shorts", i: "🍿", t: "byo", d: "Snackable vertical stories, one click at a time." },
+    { n: "Canvas Board", i: "🎨", t: "byo", d: "Free-form generation surface with layers." },
+    { n: "Manga Desk", i: "🖋️", t: "byo", d: "Panel-by-panel comic and manga pages." },
+  ]},
+  { group: "Muse", items: [
+    { n: "Muse Core", i: "👤", t: "byo", d: "One character identity, consistent across shots." },
+    { n: "Muse ID", i: "🪪", t: "byo", d: "Character reference sheets and identity locks." },
+    { n: "Muse Cinema", i: "🎟️", t: "byo", d: "Your character, cast in a whole sequence." },
+  ]},
+  { group: "System", items: [
+    { n: "Full local mode", i: "🐳", t: "link", d: "The complete product on your Mac: projects, Flowboard, local library, your own engine keys. Optional — light mode never needs it.", href: "https://github.com/aertical17-byte/cineforge#readme" },
+    { n: "REST API", i: "🔌", t: "link", d: "The same /v1 API the app uses — documented endpoint by endpoint.", href: "https://github.com/aertical17-byte/cineforge/tree/main/docs" },
+    { n: "CLI Kit", i: "⌨️", t: "link", d: "No Mac app? Run everything with Docker from the terminal — 4 commands.", href: "https://github.com/aertical17-byte/cineforge#-no-mac-or-prefer-commands" },
+    { n: "Power Bench", i: "⚡", t: "byo", d: "Bring your own GPU time or keys for heavy jobs." },
+    { n: "Motion Designer", i: "🧭", t: "byo", d: "Keyframe and motion-path design for shots." },
+    { n: "Team Room", i: "🤝", t: "plan", d: "Shared projects for small crews — on the roadmap." },
+  ]},
+  { group: "Library", items: [
+    { n: "Help Center", i: "🧭", t: "link", d: "Install, first launch and troubleshooting.", href: "../guida.html" },
+    { n: "Prompt Guide", i: "📖", t: "link", d: "How to write shots that actually work.", href: "https://github.com/aertical17-byte/cineforge/tree/main/docs" },
+    { n: "Project on GitHub", i: "⭐", t: "link", d: "Source, issues and releases — everything public.", href: "https://github.com/aertical17-byte/cineforge" },
+    { n: "Roadmap", i: "🗺️", t: "link", d: "What's next, tracked in the open.", href: "https://github.com/aertical17-byte/cineforge" },
+  ]},
+];
+
+const TAGS = { free: ["free", "badge free"], byo: ["your engine", "badge byo"], link: ["open", "badge link"], plan: ["planned", "badge plan"] };
+const cat = document.getElementById("catalog");
+for (const g of CATALOG) {
+  const div = document.createElement("div");
+  div.className = "group";
+  div.innerHTML = "<h3>" + g.group + "</h3>";
+  const grid = document.createElement("div");
+  grid.className = "cards";
+  for (const it of g.items) {
+    const [label, cls] = TAGS[it.t];
+    const b = document.createElement("button");
+    b.className = "card";
+    b.type = "button";
+    b.innerHTML = '<span class="row"><span class="ico">' + it.i + '</span><b>' + it.n + '</b><span class="badge ' + cls.split(" ")[1] + '">' + label + '</span></span><p>' + it.d + '</p>';
+    b.addEventListener("click", () => {
+      if (it.act === "atelier") openAtelier();
+      else if (it.act === "film") openAtelier({ film: true });
+      else if (it.t === "link" && it.href) window.open(it.href, "_blank", "noopener");
+      else openByo(it);
+    });
+    grid.appendChild(b);
+  }
+  div.appendChild(grid);
+  cat.appendChild(div);
+}
+
+/* ---------- Atelier ---------- */
+const $ = (id) => document.getElementById(id);
+const HORDE = "https://aihorde.net/api/v2";
+const ANON_KEY = "0000000000";
+const CLIENT_AGENT = "CineForgeAI:0.6.0:light-studio";
+
+function openAtelier(opts = {}) {
+  $("atelierBox").classList.add("open");
+  if (opts.film) {
+    // Film Room: pre-roll a cinematic shot on the free engine
+    $("move").value = "Orbit Right";
+    $("palette").value = "Cyan Dream";
+    $("light").value = "Neon Night";
+    $("lens").value = "Anamorphic";
+    if (!$("prompt").value) $("prompt").value = "a lone hero on a rooftop at night, city lights below, wind in the coat";
+  }
+  $("atelierBox").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+$("atelierClose").addEventListener("click", () => $("atelierBox").classList.remove("open"));
+
+function openByo(it) {
+  $("byoTitle").textContent = (it.i || "") + " " + it.n;
+  $("byoDesc").textContent = it.d || "";
+  $("overlay").classList.add("open");
+}
+$("byoClose").addEventListener("click", () => $("overlay").classList.remove("open"));
+$("overlay").addEventListener("click", (e) => { if (e.target === $("overlay")) $("overlay").classList.remove("open"); });
+
+/* engine health chip + model list */
+(async () => {
+  try {
+    const r = await fetch(HORDE + "/status/heartbeat");
+    if (r.ok) $("engineChip").textContent = "🟢 free engine: online";
+    else throw 0;
+  } catch { $("engineChip").textContent = "🟡 free engine: unreachable right now"; }
+  try {
+    const r = await fetch(HORDE + "/status/models?type=image");
+    const models = await r.json();
+    models.sort((a, b) => (b.count || 0) - (a.count || 0));
+    const sel = $("model");
+    let shown = 0;
+    for (const m of models) {
+      if (shown >= 14) break; // keep the picker readable
+      if (!m.count || m.count < 1) continue;
+      if (/nsfw/i.test(m.name)) continue; // general-audience picker: no adult models listed
+      const o = document.createElement("option");
+      o.value = m.name; o.textContent = m.name + " (" + m.count + " workers)";
+      sel.appendChild(o);
+      shown++;
+    }
+  } catch { /* honest: keep "any available" */ }
+})();
+
+let job = null; // {id, timer, started}
+let lastResult = null; // {url, seed, model, worker, prompt}
+
+function setStatus(msg, cls) { const s = $("status"); s.textContent = msg; s.className = "status" + (cls ? " " + cls : ""); }
+function composePrompt() {
+  const p = [$("prompt").value.trim()];
+  const add = (id, label) => { const v = $(id).value; if (v) p.push(label + ": " + v.toLowerCase()); };
+  add("move", "camera"); add("genre", "genre"); add("palette", "palette");
+  add("light", "lighting"); add("lens", "lens"); add("era", "era"); add("tempo", "tempo");
+  return p.join(" · ");
+}
+
+$("genBtn").addEventListener("click", async () => {
+  const prompt = $("prompt").value.trim();
+  if (!prompt) { setStatus("Write a shot first — even a few words are enough.", "err"); return; }
+  if (job) { setStatus("A generation is already running — wait for it or refresh the page.", "err"); return; }
+  const [w, h] = $("size").value.split("x").map(Number);
+  const body = {
+    prompt: composePrompt(),
+    params: { width: w, height: h, steps: Number($("steps").value), cfg_scale: 7, sampler_name: "k_euler_a", n: 1 },
+    nsfw: false, censor_nsfw: true, shared: false, r2: true,
+  };
+  const model = $("model").value;
+  if (model) body.models = [model];
+  $("genBtn").disabled = true;
+  $("frame").innerHTML = '<div style="text-align:center"><div class="spin" style="margin:0 auto 10px"></div><div class="hint">Sending your shot to the community engine…</div></div>';
+  $("meta").textContent = "";
+  $("saveBtn").disabled = $("openBtn").disabled = $("keepBtn").disabled = true;
+  lastResult = null;
+  try {
+    const r = await fetch(HORDE + "/generate/async", {
+      method: "POST",
+      headers: { "apikey": ANON_KEY, "Content-Type": "application/json", "Client-Agent": CLIENT_AGENT },
+      body: JSON.stringify(body),
+    });
+    if (!r.ok) {
+      const t = await r.text();
+      throw new Error("engine refused the job (HTTP " + r.status + "): " + t.slice(0, 180));
+    }
+    const { id } = await r.json();
+    setStatus("Job accepted — queued on the volunteers' network. Polling honestly…");
+    poll(id, Date.now());
+  } catch (e) {
+    $("frame").innerHTML = '<div class="hint">❌ ' + esc(String(e.message || e)) + '<br><br>No fake results: when the engine can\'t run, this page says so.</div>';
+    setStatus("Generation failed — see the reason above. You can retry.", "err");
+    $("genBtn").disabled = false;
+  }
+});
+
+function poll(id, started) {
+  job = { id, started };
+  const tick = async () => {
+    if (!job || job.id !== id) return;
+    try {
+      const c = await fetch(HORDE + "/generate/check/" + id, { headers: { "Client-Agent": CLIENT_AGENT } });
+      const st = await c.json();
+      if (!c.ok) throw new Error("status HTTP " + c.status);
+      if (st.faulted) throw new Error("the worker faulted — nobody is pretending otherwise. Retry, maybe with fewer steps or a smaller size.");
+      if (st.is_possible === false) throw new Error("no available worker can do this job right now (too big for the free network?). Try a smaller size or fewer steps.");
+      if (st.processing === false && st.wait === 0 && st.queue_position === 0 && (st.done === true)) {
+        await collect(id); return;
+      }
+      const parts = [];
+      if (st.queue_position > 0) parts.push("queue position " + st.queue_position);
+      if (st.wait > 0) parts.push("≈" + Math.max(5, Math.round(st.wait)) + " s left");
+      if (!parts.length) parts.push("rendering on a worker");
+      const mins = Math.round((Date.now() - started) / 60000);
+      setStatus("⏳ " + parts.join(" · ") + " (elapsed " + (mins ? mins + " min " : "") + Math.round(((Date.now() - started) % 60000) / 1000) + " s)");
+    } catch (e) {
+      job = null; $("genBtn").disabled = false;
+      $("frame").innerHTML = '<div class="hint">❌ ' + esc(String(e.message || e)) + '</div>';
+      setStatus("Generation failed — honest reason above. Retry anytime.", "err");
+      return;
+    }
+    if (Date.now() - started > 10 * 60 * 1000) {
+      job = null; $("genBtn").disabled = false;
+      setStatus("⏱️ Over 10 minutes: the free queue is very busy. Retry later or use a smaller size — no fake results here.", "err");
+      return;
+    }
+    setTimeout(tick, 3000);
+  };
+  tick();
+}
+
+async function collect(id) {
+  job = null;
+  try {
+    const r = await fetch(HORDE + "/generate/status/" + id, { headers: { "Client-Agent": CLIENT_AGENT } });
+    const st = await r.json();
+    if (!r.ok || !st.generations || !st.generations.length) throw new Error("no frame returned (HTTP " + r.status + ")");
+    const g = st.generations[0];
+    const src = g.img.startsWith("http") ? g.img : "data:image/webp;base64," + g.img;
+    lastResult = { url: src, seed: g.seed, model: g.model, worker: g.worker_name, prompt: $("prompt").value.trim(), composed: composePrompt() };
+    showResult();
+    setStatus("✅ Frame delivered — free, no account, no card.", "done");
+  } catch (e) {
+    $("frame").innerHTML = '<div class="hint">❌ ' + esc(String(e.message || e)) + '</div>';
+    setStatus("Generation finished but the frame couldn't be fetched — retry.", "err");
+  }
+  $("genBtn").disabled = false;
+}
+
+function showResult() {
+  const fr = $("frame");
+  fr.innerHTML = "";
+  const img = document.createElement("img");
+  img.src = lastResult.url;
+  img.alt = "Generated frame: " + (lastResult.prompt || "");
+  fr.appendChild(img);
+  $("meta").textContent = "model: " + (lastResult.model || "?") + " · seed: " + (lastResult.seed || "?") + " · worker: " + (lastResult.worker || "?") + " · kudos: 0 (anonymous)";
+  $("saveBtn").disabled = $("openBtn").disabled = $("keepBtn").disabled = false;
+}
+
+function esc(s) { const d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
+
+$("openBtn").addEventListener("click", () => { if (lastResult) window.open(lastResult.url, "_blank", "noopener"); });
+
+$("saveBtn").addEventListener("click", async () => {
+  if (!lastResult) return;
+  try {
+    if (lastResult.url.startsWith("data:")) throw new Error("direct");
+    const r = await fetch(lastResult.url);
+    const b = await r.blob();
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(b);
+    a.download = "cineforge-" + (lastResult.seed || Date.now()) + ".webp";
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  } catch {
+    window.open(lastResult.url, "_blank", "noopener");
+    setStatus("💾 Opened the full-size frame in a new tab — save it from there (the engine's server doesn't allow direct downloads).", "done");
+  }
+});
+
+/* ---------- Gallery (localStorage only) ---------- */
+const GKEY = "cineforge_light_gallery";
+function gallery() { try { return JSON.parse(localStorage.getItem(GKEY) || "[]"); } catch { return []; } }
+function renderGal() {
+  const g = gallery(), el = $("gal");
+  el.innerHTML = "";
+  if (!g.length) { el.innerHTML = '<div class="gal-empty">Empty for now — generate a frame and press “Keep in gallery”.</div>'; return; }
+  for (const [i, it] of g.entries()) {
+    const f = document.createElement("figure");
+    f.innerHTML = '<img src="' + it.u + '" alt="' + esc(it.p || "frame") + '" title="click to open"><figcaption>' + esc((it.p || "").slice(0, 40)) + '</figcaption>';
+    f.querySelector("img").addEventListener("click", () => window.open(it.u, "_blank", "noopener"));
+    f.addEventListener("contextmenu", (e) => { e.preventDefault(); g.splice(i, 1); localStorage.setItem(GKEY, JSON.stringify(g)); renderGal(); });
+    el.appendChild(f);
+  }
+}
+$("keepBtn").addEventListener("click", () => {
+  if (!lastResult) return;
+  if (!lastResult.url.startsWith("http")) { setStatus("🗂 This frame is delivered inline — too big for the browser gallery. Use Save instead.", "err"); return; }
+  const g = gallery();
+  g.unshift({ u: lastResult.url, p: lastResult.prompt, m: lastResult.model, s: lastResult.seed, t: Date.now() });
+  try { localStorage.setItem(GKEY, JSON.stringify(g.slice(0, 18))); } catch { g.splice(6); localStorage.setItem(GKEY, JSON.stringify(g)); }
+  renderGal();
+  setStatus("🗂 Kept in the gallery (browser-only). Right-click a thumbnail to remove it.", "done");
+});
+renderGal();
+</script>
+</body>
+</html>

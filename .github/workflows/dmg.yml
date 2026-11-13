@@ -46,8 +46,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release delete v0.5.0 --yes --cleanup-tag 2>/dev/null || true
-          gh release create v0.5.0 dist/CineForge-AI.dmg \
-            --title "CineForge AI v0.5.0 — Mac installer" \
+          gh release delete v0.6.0 --yes --cleanup-tag 2>/dev/null || true
+          gh release create v0.6.0 dist/CineForge-AI.dmg \
+            --title "CineForge AI v0.6.0 — Mac installer (Light mode: no Docker needed)" \
             --latest \
-            --notes "Download **CineForge-AI.dmg**, drag “CineForge AI” into Applications, open it and click **Set up & start**. Requires [Docker Desktop](https://www.docker.com/products/docker-desktop/) (free) — the app guides you. First run: 5–15 minutes. **No signup**: open localhost:3000 and start creating right away, with **unlimited credits** (1,000,000, never expiring) and the **free image engine included** (AI Horde, \$0, no card). If macOS says the app cannot be opened: System Settings → Privacy & Security → **Open Anyway** (or in Terminal: \`xattr -dr com.apple.quarantine \"/Applications/CineForge AI.app\"\`). Guide: in the project (docs) and inside the app."
+            --notes "**New in v0.6.0 — Light mode: no Docker, no 6 GB, no setup.** Open the app and the Light Studio opens in your browser automatically (localhost:3000 redirects to the hosted studio). **Image generation is free** — the community engine (AI Horde) runs on volunteers' GPUs: no card, no signup, no API key, and it all happens client-side. The full room catalog is honestly labeled: what works free now vs. what needs your own engine key. **Full local mode** (optional, Docker Desktop required) still gives you the complete product: projects, Flowboard, local library, your own keys — first run 5–15 minutes. If macOS says the app cannot be opened: System Settings → Privacy & Security → **Open Anyway** (or in Terminal: \`xattr -dr com.apple.quarantine \"/Applications/CineForge AI.app\"\`). Guide: in the project (docs) and inside the app."

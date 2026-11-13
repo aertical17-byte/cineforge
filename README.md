@@ -18,11 +18,24 @@ CineForge AI is a web app that lets you:
 
 ---
 
+## ⚡ Light mode — nothing to install (v0.6.0+, no Docker, no 6 GB)
+
+Since v0.6.0 the Mac app opens **the Light Studio in your browser by itself** (the app runs a tiny redirect on `localhost:3000` to the hosted studio):
+
+- 🖼️ **Free image generation, right now**: the community engine (AI Horde) runs client-side in your browser — no Docker, no disk space, no card, no signup, no API key
+- 🎥 **22 camera moves + director presets** (genres, palettes, lighting, lenses, eras — the real registries) composed into your prompt
+- 🗂 **Every room honestly labeled**: what works free today vs. what needs your own engine key — nothing pretends
+- 🪶 The launcher is ~2 MB. Nothing else touches your Mac; the studio page itself is hosted for free and builds on GitHub Actions
+
+The **full local mode** (optional, Docker Desktop required) still gives you the complete product: projects, Flowboard, local library, your own engine keys.
+
+---
+
 ## 🚀 Try it on your Mac (the easy way)
 
 1. **Download the installer** → [latest release → the `CineForge-AI.dmg` file](https://github.com/aertical17-byte/cineforge/releases/latest)
 2. Open the downloaded file and **drag "CineForge AI" into Applications**
-3. Launch the app and click **"Set up & start CineForge on my Mac"** — the app downloads the code, starts the services and opens your browser when it's ready (the first run downloads a lot: **5–15 minutes**)
+3. Launch the app: the **Light Studio opens in your browser automatically** — you're already creating (free engine, no Docker). For the complete product, click **"Full local mode (Docker) — show options"** → the app downloads the code, starts the services and opens your browser when it's ready (the first run downloads a lot: **5–15 minutes**)
 
 > ✅ Requirements: macOS 13+ and [Docker Desktop](https://www.docker.com/products/docker-desktop/) (free). The app checks by itself and guides you if something is missing.
 > 📖 Illustrated step-by-step guide: **[cineforge-iota.vercel.app/guida.html](https://cineforge-iota.vercel.app/guida.html)**
