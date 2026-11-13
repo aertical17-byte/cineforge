@@ -254,7 +254,7 @@ footer .fineprint { max-width: 860px; }
               </div>
             </div>
             <button class="btn primary" id="genBtn">✨ Generate — free</button>
-            <div class="status" id="status">Write a shot and press Generate. Queue is usually 30–120 s — that's the honest price of free.</div>
+            <div class="status" id="status">Write a shot and press Generate. The free community network is shared by everyone: usually 1–3 minutes, sometimes 10+ when it's busy — that's the honest price of free.</div>
           </div>
           <div class="result">
             <div class="frame" id="frame"><div class="hint">Your generated frame appears here.<br><br>Everything runs in your browser against the free community engine — no account, no keys, nothing installed.</div></div>
@@ -519,7 +519,7 @@ $("genBtn").addEventListener("click", async () => {
 });
 
 function poll(id, started) {
-  job = { id, started };
+  job = { id, started, longNoted: false };
   const tick = async () => {
     if (!job || job.id !== id) return;
     try {
@@ -528,27 +528,34 @@ function poll(id, started) {
       if (!c.ok) throw new Error("status HTTP " + c.status);
       if (st.faulted) throw new Error("the worker faulted — nobody is pretending otherwise. Retry, maybe with fewer steps or a smaller size.");
       if (st.is_possible === false) throw new Error("no available worker can do this job right now (too big for the free network?). Try a smaller size or fewer steps.");
-      if (st.processing === false && st.wait === 0 && st.queue_position === 0 && (st.done === true)) {
+      if (st.done === true || st.finished > 0) {
         await collect(id); return;
       }
       const parts = [];
-      if (st.queue_position > 0) parts.push("queue position " + st.queue_position);
-      if (st.wait > 0) parts.push("≈" + Math.max(5, Math.round(st.wait)) + " s left");
+      if ((st.queue_position || 0) > 0) parts.push("queue position " + st.queue_position);
+      const eta = st.wait_time || 0; // the API field is wait_time (seconds)
+      if (eta > 0) parts.push("≈" + (eta > 90 ? Math.round(eta / 60) + " min" : Math.max(5, eta) + " s") + " left");
       if (!parts.length) parts.push("rendering on a worker");
-      const mins = Math.round((Date.now() - started) / 60000);
-      setStatus("⏳ " + parts.join(" · ") + " (elapsed " + (mins ? mins + " min " : "") + Math.round(((Date.now() - started) % 60000) / 1000) + " s)");
+      const el = Date.now() - started;
+      const mins = Math.floor(el / 60000);
+      setStatus("⏳ " + parts.join(" · ") + " (elapsed " + (mins ? mins + " min " : "") + Math.round((el % 60000) / 1000) + " s)");
     } catch (e) {
       job = null; $("genBtn").disabled = false;
       $("frame").innerHTML = '<div class="hint">❌ ' + esc(String(e.message || e)) + '</div>';
       setStatus("Generation failed — honest reason above. Retry anytime.", "err");
       return;
     }
-    if (Date.now() - started > 10 * 60 * 1000) {
+    const waited = Date.now() - started;
+    if (waited > 30 * 60 * 1000) {
       job = null; $("genBtn").disabled = false;
-      setStatus("⏱️ Over 10 minutes: the free queue is very busy. Retry later or use a smaller size — no fake results here.", "err");
+      setStatus("⏱️ Over 30 minutes: the free community network is saturated. No fake results here — your job " + id.slice(0, 8) + "… may still complete on the volunteers' network. Retry anytime.", "err");
       return;
     }
-    setTimeout(tick, 3000);
+    if (waited > 10 * 60 * 1000 && !job.longNoted) {
+      job.longNoted = true;
+      setStatus("⏳ Over 10 minutes: the free network is very busy. Keep this tab open — your spot is kept. Honest status, no fake results.", "err");
+    }
+    setTimeout(tick, waited > 10 * 60 * 1000 ? 10000 : 3000);
   };
   tick();
 }
